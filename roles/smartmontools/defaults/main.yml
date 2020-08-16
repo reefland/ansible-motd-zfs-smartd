@@ -46,3 +46,8 @@ enable_custom_motd_entries:
   - 30-zpool-bar
   - 36-diskstatus
   - 40-services
+
+# Define the time of day (roughly) to perform tests:
+# Value are hour of the day from 00 to 23
+smartd_short_test_hour: '02'
+smartd_long_test_hour: '03'
