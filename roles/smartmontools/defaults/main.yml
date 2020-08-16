@@ -1,0 +1,48 @@
+---
+# manual_entries_to_hddtemp - manually add entries for which hddtemp cannot discover.
+#  $ sudo hddtemp /dev/sda
+#  If it shows: WARNING: Drive /dev/sda doesn't seem to have a temperature sensor.
+#               /dev/sda: Samsung SSD 840 Series:  no sensor
+
+#  This can help discover the device data field number for temperature:
+#  $ sudo smartctl -a /dev/sda | grep -i temp
+
+#  Finds: 190 Airflow_Temperature_Cel 0x0032   077   060   000    Old_age   Always       -       23
+
+# Field 1: Use a string or regex matching the drive's display name (as reported by hddtemp output)
+# Field 2: SMART data field number (190 for Samsung 840 and 860 models)
+# Field 3: Drive reports temperature in unit (C or F)
+# Field 4: Label string or comment you define
+manual_entries_to_hddtemp:
+  - '"Samsung SSD (840|860)" 190 C "Temp for Samsung SSDs"'
+
+# have hddtemp report units in C or F
+hddtemp_temp_unit: "F"
+
+# Location to store Message of the Day files from above GIT Repo
+git_root_path: "/root/git"
+
+# Define Message of the Day items to disable by removing -x from file
+default_motd_entries_to_disable:
+  - /etc/update-motd.d/10-help-text
+  - /etc/update-motd.d/80-esm
+  - /etc/update-motd.d/80-livepatch
+
+# Define Message of the Day items which need to be unlinked (remove -x does not work)
+default_motd_entries_to_unlink:
+  - /etc/update-motd.d/50-landscape-sysinfo
+
+# Display the Ubuntu News Message - 0 = disable, 1 = enable
+# value set within: /etc/default/motd-news
+show_ubuntu_news_message: '0'
+
+# Define GIT repo to use for customized Message of the Day
+motd_git_repo: "https://gitea.rich-durso.us:3000/reefland/motd"
+
+# Define Custom Message of the Day files to ENABLE from the GIT Repo
+enable_custom_motd_entries:
+  - 10-hostname-color
+  - 20-sysinfo
+  - 30-zpool-bar
+  - 36-diskstatus
+  - 40-services

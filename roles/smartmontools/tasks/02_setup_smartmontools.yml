@@ -1,0 +1,47 @@
+#
+# This helper script will install smartmontools set "smartd" and configure
+# regular testing scheduler
+#
+---
+- name: Install and Configure SmartmonTools Block
+  block:
+  - name: Install packages for SmartMonTools
+    apt:
+      name: ['smartmontools']
+      state: present
+      install_recommends: no
+    when:
+      - ansible_os_family == "Debian"
+
+  # Disable existing DEVICESCAN entry (anything past it is ignored)
+  - name: Add devices to /etc/smartd.conf
+    lineinfile:
+      path: "/etc/smartd.conf"
+      regexp: "^(DEVICESCAN*)"
+      line: "#\\1"
+      state: present
+    
+  # Add one line per device to "/etc/smartd.conf" replace any existing line for device
+  # ( -a) enables some common options
+  # (-H) checks the SMART health status
+  # (-l) reports increases in both SMART error logs 
+  # (-f) checks for failure of any Usage Attributes
+  # -s (S/../.././02|L/../../6/03)" schedules the short and long self-tests
+  # In this example, the short self-test will run daily at 2:00 A.M. The long test will run on every Saturday at 3:00 A.M. 
+  - name: Add devices to /etc/smartd.conf
+    lineinfile:
+      path: "/etc/smartd.conf"
+      regexp: "^{{item}}"
+      line: "{{item}} -a -H -l error -l selftest -f -s (S/../.././02|L/../../6/03) -m root -M exec /usr/share/smartmontools/smartd-runner"
+      state: present
+    loop: "{{disk_by_id|list}}"
+
+  - name: Restart smartd service
+    systemd:
+      name: smartd
+      state: restarted
+
+  when:
+  - ansible_os_family == "Debian"
+  tags:
+  - setup_smartmontools

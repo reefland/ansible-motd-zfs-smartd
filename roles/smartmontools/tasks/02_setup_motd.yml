@@ -1,0 +1,135 @@
+#
+# This helper script configuires the system for our custom Message of the Day
+# GIT repository.
+#
+
+- name: Install and Apply Message of the Day Settings Block
+  become: true
+  block:
+  ###[ Install Packages ]######################################################
+  - name: Install packages needed for Message of the Day and hddtemp
+    apt:
+      name: ['git','update-motd','figlet','lolcat','hddtemp','bc']
+      state: present
+      install_recommends: no
+    when:
+      - ansible_os_family == "Debian"
+
+  - name: Install Ubuntu Specific packages used by Message of the Day
+    apt:
+      name: ['update-notifier-common']
+      state: present
+      install_recommends: no
+    when:
+      - ansible_distribution == 'Ubuntu'
+
+  ###[ Disable Existing MOTD Items We Don't Want ]#############################
+  - name: Check if MOTD files to turn off exist
+    stat:
+      path: "{{ item }}"
+    loop: "{{default_motd_entries_to_disable | list}}"
+    register: my_stat
+
+  - name: Turn off MOTD entries we won't be using
+    file:
+      path: "{{item}}"
+      mode: -x
+      state: file
+    loop: "{{ my_stat.results | selectattr('stat.exists') | map(attribute='item') | list }}"
+
+  - name: Check if MOTD files to unlink exist
+    stat:
+      path: "{{ item }}"
+    loop: "{{default_motd_entries_to_unlink | list}}"
+    register: my_stat
+
+  - name: Unlink MOTD entries we won't be using
+    file:
+      path: "{{item}}"
+      state: absent
+    loop: "{{ my_stat.results | selectattr('stat.exists') | map(attribute='item') | list }}"
+
+  - name: Disable Ubuntu News Advertisement
+    ini_file:
+        path: /etc/default/motd-news
+        section:
+        option: "ENABLED"
+        value: "{{show_ubuntu_news_message}}"
+        no_extra_spaces: yes
+        mode: '0644'
+        create: no
+    when:
+    - ansible_distribution == 'Ubuntu'
+  
+  ###[ Configure HDDTemp ]#####################################################
+
+  # HDDTemp may not detect Temperature Sensors for SSDs, add manual entries
+  - name: Add manual entries to /etc/hddtemp.db
+    lineinfile:
+      path: "/etc/hddtemp.db"
+      regexp: "^{{item}}"
+      line: "{{item}}"
+      state: present
+    loop: "{{manual_entries_to_hddtemp|list}}"
+
+  # Get the last device letter from each active device, this is needed for hddtmp monitoring
+  # If "disk_devices" contains ['sda','sdb','sdc'] then device_letters is "abc"
+  - name: Construct device letter string
+    set_fact:
+      device_letters: "{{device_letters|default('') + item[-1]}}"
+    loop:
+     "{{disk_devices}}"
+
+  - name: Creates @reboot CRON entry for HDDTemp"
+    cron:
+      name: "Load hddtemp at reboot"
+      special_time: reboot
+      job: "/usr/sbin/hddtemp -d /dev/sd[{{device_letters}}] --unit={{hddtemp_temp_unit}} --listen=localhost"
+
+  ###[ Configure Custom Message of the Day ]###################################
+  - name: Create the GIT directory if does not exist already
+    file: 
+     path: "{{git_root_path|default('/root/git')}}"
+     state: directory
+     mode: '0750'
+
+  - name: Clone GIT repository - overwrite anything locally modified
+    git:
+      repo: "{{motd_git_repo}}"
+      accept_hostkey: yes
+      clone: yes
+      force: yes
+      dest: "{{git_root_path}}/motd"
+
+  - name: Enable the Custom Message of the Day Files
+    copy:
+      src: "{{git_root_path}}/motd/{{item}}"
+      dest: "/etc/update-motd.d/"
+      remote_src: yes
+      mode: 755
+      owner: root
+      group: root
+      force: yes
+    loop: "{{enable_custom_motd_entries | list}}"
+
+  - name: Check if NEW MOTD File was Generated
+    stat:
+      path: "/run/motd.dynamic.new"
+    register: my_stat
+
+  - name: Replace OLD MOTD with NEW one Generated
+    copy:
+      src: "/run/motd.dynamic.new"
+      dest: "/run/motd.dynamic"
+      remote_src: yes
+      mode: 644
+      owner: root
+      group: root
+      force: yes
+    when: my_stat.stat.exists
+
+  when:
+  - ansible_os_family == "Debian"
+
+  tags:
+  - setup_motd
