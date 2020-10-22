@@ -106,7 +106,7 @@
       src: "{{git_root_path}}/motd/{{item}}"
       dest: "/etc/update-motd.d/"
       remote_src: yes
-      mode: 755
+      mode: '0755'
       owner: root
       group: root
       force: yes
@@ -122,7 +122,7 @@
       src: "/run/motd.dynamic.new"
       dest: "/run/motd.dynamic"
       remote_src: yes
-      mode: 644
+      mode: '0644'
       owner: root
       group: root
       force: yes
