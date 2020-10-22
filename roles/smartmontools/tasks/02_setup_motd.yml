@@ -51,13 +51,14 @@
 
   - name: Disable Ubuntu News Advertisement
     ini_file:
-        path: /etc/default/motd-news
-        section:
-        option: "ENABLED"
-        value: "{{show_ubuntu_news_message}}"
-        no_extra_spaces: yes
-        mode: '0644'
-        create: no
+      path: /etc/default/motd-news
+      section:
+      option: "ENABLED"
+      value: "{{show_ubuntu_news_message}}"
+      no_extra_spaces: yes
+      mode: '0644'
+      create: no
+    ignore_errors: true
     when:
     - ansible_distribution == 'Ubuntu'
   
