@@ -21,6 +21,14 @@
       line: "#\\1"
       state: present
     
+  # Remove any pre-existing devices no longer present.  Device names change
+  # when moved to new systems, motherboards, controllers, etc.
+  - name: Remove existing devices from /etc/smartd.conf
+    lineinfile:
+      path: "/etc/smartd.conf"
+      regexp: "^(\/dev\/disk\/by-id\/*)"
+      state: absent
+ 
   # Add one line per device to "/etc/smartd.conf" replace any existing line for device
   # ( -a) enables some common options
   # (-H) checks the SMART health status
