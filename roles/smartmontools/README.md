@@ -20,7 +20,8 @@ The following packages will be installed:
 * [figlet](https://en.wikipedia.org/wiki/FIGlet) to generate the hostname as a larger banner font
 * [lolcat](http://manpages.ubuntu.com/manpages/focal/man6/lolcat.6.html) provides a colorful rendering of the `figlet` hostname banner
 * [bc](https://en.wikipedia.org/wiki/Bc_(programming_language)) a basic calculator used for working with temperature values
-* [update-notifier-common](https://packages.ubuntu.com/focal/update-notifier-common) Provides some of the MOTD scripts required including notification if a reboot is required
+* [update-notifier-common](https://packages.ubuntu.com/focal/update-notifier-common) provides some of the MOTD scripts required including notification if a reboot is required
+* [bsdmainutils](https://launchpad.net/ubuntu/focal/+package/bsdmainutils) provides text parsing utilities ported over from BSD. Utilities such as `column` are used to present disk information.
 
 ## Configuration
 

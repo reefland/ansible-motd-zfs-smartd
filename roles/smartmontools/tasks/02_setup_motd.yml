@@ -9,7 +9,7 @@
   ###[ Install Packages ]######################################################
   - name: Install packages needed for Message of the Day and hddtemp
     apt:
-      name: ['git','update-motd','figlet','lolcat','hddtemp','bc']
+      name: ['git','update-motd','figlet','lolcat','hddtemp','bc','bsdmainutils']
       state: present
       install_recommends: no
     when:
