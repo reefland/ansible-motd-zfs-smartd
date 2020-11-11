@@ -1,0 +1,7 @@
+# Define how many disks devices can be monitored per instance of hddtemp
+# hddtemp can only handle a few devices due to number of parameters needed
+# to pass.
+hddtemp_num_devices: 4
+
+# Define default base hddtemp port to listen on (listens on localhost).
+hddtemp_port: 7634

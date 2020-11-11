@@ -81,11 +81,23 @@
     loop:
      "{{disk_devices}}"
 
-  - name: Creates @reboot CRON entry for HDDTemp"
+  # hddtemp can only take a limited number of devices; which is a limit on the number of
+  # parameters which can be passed via the command line.  Break up the disk device list 
+  # into chunks the size defined by "hddtemp_num_devices"
+  
+  - name: "Chunk device letter string by {{hddtemp_num_devices}}"
+    set_fact:
+      device_letters: "{{ device_letters | regex_findall('.{1,' + hddtemp_num_devices|string +'}') }}"
+
+  - name: Creates @reboot CRON entry for HDDTemp instances
     cron:
-      name: "Load hddtemp at reboot"
+      name: "Load hddtemp at reboot for port {{hddtemp_port+hddtemp_num_instances}}"
       special_time: reboot
-      job: "/usr/sbin/hddtemp -d /dev/sd[{{device_letters}}] --unit={{hddtemp_temp_unit}} --listen=localhost"
+      job: "/usr/sbin/hddtemp -d /dev/sd[{{item}}] --unit={{hddtemp_temp_unit}} --listen=localhost --port={{hddtemp_port+hddtemp_num_instances}}"
+    loop:
+      "{{device_letters}}"
+    loop_control:
+      index_var: hddtemp_num_instances
 
   ###[ Configure Custom Message of the Day ]###################################
   - name: Create the GIT directory if does not exist already
