@@ -25,7 +25,7 @@ The following packages will be installed:
 
 ## Configuration
 
-The file `defaults/main.yml` can be used to configure which default messages are disabled and which new ones are enabled.
+The file `install_smartmontools.yml` can be used to configure which default messages are disabled and which new ones are enabled.
 
 ### Default Message Files Disabled
 
@@ -127,7 +127,7 @@ Device: /dev/disk/by-id/ata-Samsung_SSD_840_Series_S14GNEACB04928H [SAT], will d
 
 ### Altering the Testing Schedule
 
-The default time configured for short test is roughly 2:00 in the morning and long test roughly at 03:00 in the morning. This can be changed by editing `default/main.yml` block:
+The default time configured for short test is roughly 2:00 in the morning and long test roughly at 03:00 in the morning. This can be changed by editing `install_smartmontools.yml` block:
 
 ```yaml
 # Define the time of day (roughly) to perform tests:
