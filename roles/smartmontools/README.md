@@ -15,7 +15,7 @@ The following packages will be installed:
 
 * [smartmontools](https://en.wikipedia.org/wiki/Smartmontools) retrieves the S.M.A.R.T. (Selt-Monitoring, Analysis and Reporting Technology) attributes from the disk devices including temperature and performs periodic testing of the disk devices
 * [hddtemp](https://wiki.archlinux.org/index.php/Hddtemp) reads temperature S.M.A.R.T.  attribute from disk devices. This will be run as a daemon
-* [git](https://en.wikipedia.org/wiki/Git) needed to retrieve files from [Custom Message of the Day with ZFS Support](https://gitea.rich-durso.us:3000/reefland/motd) Repository
+* [git](https://en.wikipedia.org/wiki/Git) needed to retrieve files from [Custom Message of the Day with ZFS Support](https://gitea.rich-durso.us/reefland/motd) Repository
 * [update-motd](http://manpages.ubuntu.com/manpages/focal/man5/update-motd.5.html) is a framework by which `motd` is dynamically assembled from a collection of scripts at login
 * [figlet](https://en.wikipedia.org/wiki/FIGlet) to generate the hostname as a larger banner font
 * [lolcat](http://manpages.ubuntu.com/manpages/focal/man6/lolcat.6.html) provides a colorful rendering of the `figlet` hostname banner
