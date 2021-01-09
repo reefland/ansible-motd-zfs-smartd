@@ -4,4 +4,6 @@
 hddtemp_num_devices: 4
 
 # Define default base hddtemp port to listen on (listens on localhost).
+# The base number is incremented by one for every "hddtemp_num_devices"
+# number of devices.
 hddtemp_port: 7634
