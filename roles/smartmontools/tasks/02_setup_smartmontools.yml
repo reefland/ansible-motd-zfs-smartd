@@ -40,7 +40,7 @@
     lineinfile:
       path: "/etc/smartd.conf"
       regexp: "^{{item}}"
-      line: "{{item}} -a -H -l error -l selftest -f -s (S/../.././{{smartd_short_test_hour}}|L/../../6/{{smartd_long_test_hour}}) -m root -M exec /usr/share/smartmontools/smartd-runner"
+      line: "{{item}} -a -H -l error -l selftest -f -s (S/{{smartd_short_test}}|L/{{smartd_long_test}}) -m root -M exec /usr/share/smartmontools/smartd-runner"
       state: present
     loop: "{{disk_by_id|list}}"
 

@@ -130,10 +130,23 @@ Device: /dev/disk/by-id/ata-Samsung_SSD_840_Series_S14GNEACB04928H [SAT], will d
 The default time configured for short test is roughly 2:00 in the morning and long test roughly at 03:00 in the morning. This can be changed by editing `install_smartmontools.yml` block:
 
 ```yaml
-# Define the time of day (roughly) to perform tests:
-# Value are hour of the day from 00 to 23
-smartd_short_test_hour: '02'
-smartd_long_test_hour: '03'
+  # Define when smartctl shot and long test will take place. 
+  # Format is: MM/DD/d/HH, where:
+
+  # MM = Month of the year, expressed with two decimal digits. The range is from 01 (January)
+  #      to 12 (December) inclusive. Do not use a single decimal digit or the match will always fail!
+  # DD = Day of the month, expressed with two decimal digits. The range is from 01 to 31 inclusive. 
+  #      Do not use a single decimal digit or the match will always fail!
+  # d  = Day of the week, expressed with one decimal digit. The range is from 1 (Monday) to 7 (Sunday)
+  #      inclusive.
+  # HH = Hour of the day, written with two decimal digits, and given in hours after midnight. The 
+  #      range is 00 (midnight to just before 1am) to 23 (11pm to just before midnight) inclusive.
+  #      Do not use a single decimal digit or the match will always fail!
+  
+  # Use a ".." as double digit and "." as any single digit.
+
+  smartd_short_test: '../.././02'   # 2AM every day
+  smartd_long_test:  '../15/./03'   # 3AM on the 15th of every month
 ```
 
 Alternatively the scheduled times can be updated directly within `/etc/smartd.conf` for each device.
