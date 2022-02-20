@@ -194,7 +194,7 @@ _NOTE: Be mindful of all the single and double quotes when adding an entry these
 By default this is applied to `hosts: all` defined in the inventory file.  Unsupported platforms are skipped.  The customized `hddtemp` database entries will be added to all hosts.
 
 ```text
-$ ansible-playbook -i inventory install_smartmontools.yml
+$ ansible-playbook -i inventory install_smartmontools.yml -l <remote_host_name>
 ```
 
 Once completed, `hddtemp` should now be able to report the temperature of the device:
