@@ -1,5 +1,5 @@
 #
-# This helper script configuires the system for our custom Message of the Day
+# This helper script configures the system for our custom Message of the Day
 # GIT repository.
 #
 
@@ -26,26 +26,31 @@
   ###[ Disable Existing MOTD Items We Don't Want ]#############################
   - name: Check if MOTD files to turn off exist
     stat:
-      path: "{{ item }}"
-    loop: "{{default_motd_entries_to_disable | list}}"
+      path: "{{motd_path}}/{{ item }}"
+    with_items: "{{motd_entries.to_disable}}"
     register: my_stat
 
   - name: Turn off MOTD entries we won't be using
     file:
-      path: "{{item}}"
+      path: "{{motd_path}}/{{item}}"
       mode: -x
       state: file
     loop: "{{ my_stat.results | selectattr('stat.exists') | map(attribute='item') | list }}"
 
+  - name: Turn off MOTD entries defined by file globs
+    shell:
+      cmd: "chmod -x {{motd_path}}/{{item}}"
+    with_items: "{{motd_entries.file_globs_to_disable|default([])}}"
+
   - name: Check if MOTD files to unlink exist
     stat:
-      path: "{{ item }}"
-    loop: "{{default_motd_entries_to_unlink | list}}"
+      path: "{{motd_path}}/{{ item }}"
+    with_items: "{{motd_entries.to_unlink}}"
     register: my_stat
 
   - name: Unlink MOTD entries we won't be using
     file:
-      path: "{{item}}"
+      path: "{{motd_path}}/{{item}}"
       state: absent
     loop: "{{ my_stat.results | selectattr('stat.exists') | map(attribute='item') | list }}"
 
@@ -117,13 +122,15 @@
   - name: Enable the Custom Message of the Day Files
     copy:
       src: "{{git_root_path}}/motd/{{item}}"
-      dest: "/etc/update-motd.d/"
+      dest: "{{motd_path}}"
       remote_src: yes
       mode: '0755'
       owner: root
       group: root
       force: yes
-    loop: "{{enable_custom_motd_entries | list}}"
+    with_items: 
+      - "{{motd_entries.enable_these_for_all_hosts}}"
+      - "{{more_motd_entries|default([])}}"
 
   - name: Check if NEW MOTD File was Generated
     stat:
