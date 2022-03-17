@@ -1,13 +1,26 @@
-# Smartmon Tools, HDDTemp and Custom Message of the Day (MOTD) with ZFS Support
+# Custom Message of the Day (MOTD), Smartmon Tools, HDDTemp with ZFS Support
 
-Smartmon Tools are used to test and monitor disk devices. HDDTemp is used to monitor temperature of disk devices (SATA, SSD, NVMe all typically have sensors).  This information is then presented in a customized Message of the Day which is presented upon a SSH login along with status of your ZFS Pools and available Patches.
+Smartmon Tools are used to test and monitor disk devices. HDDTemp is used to monitor temperature of disk devices (SATA, SSD, NVMe all typically have sensors).  This information is gathered in a customized Message of the Day which is presented upon a SSH login along with status of your ZFS Pools and available Patches.
 
-![Sample Login](images/colors_from_dropdown.png)
+![Sample Login Screen](images/colors_from_dropdown.png)
+
+---
+
+## TL;DR
+
+* Standard Message of the Day (MOTD) output can be disabled or replaced with enhanced versions.
+* HDD/SSD Testing will be provided by Smartmon Tools.
+* HDD/SSD Testing Schedulers can be specified.
+* Each system login will show you the status of the last device test as well as its current temperature
+
+---
 
 ## Requirements
 
 * SSH Server configured to display message of the day (enabled by default on Ubuntu)
 * Ubuntu 18.04 or 20.04 releases
+
+---
 
 ## Packages Installed
 
@@ -23,31 +36,56 @@ The following packages will be installed:
 * [update-notifier-common](https://packages.ubuntu.com/focal/update-notifier-common) provides some of the MOTD scripts required including notification if a reboot is required
 * [bsdmainutils](https://launchpad.net/ubuntu/focal/+package/bsdmainutils) provides text parsing utilities ported over from BSD. Utilities such as `column` are used to present disk information.
 
-## Configuration
+---
 
-The file `install_smartmontools.yml` can be used to configure which default messages are disabled and which new ones are enabled.
+## How Do I Set It Up
 
-### Default Message Files Disabled
+### Edit your inventory document
+
+Add something like the following:
+
+```shell
+[motd_group:vars]
+enable_custom_motd_entries='["10-hostname-color", "20-sysinfo", "30-zpool-bar", "40-services"]'
+
+[motd_group]
+testlinux.example.com more_motd_entries='["60-docker"]'
+```
+
+* The `[motd_group:vars]` block defines variables that will be applied to all systems defined in the group and can override variables defined in `defaults/main.yml`.
+  * The variable `enable_custom_motd_entries=` is optional and specifies which MOTD messages are to be applied to all systems defined in this group.  If not defined here the value in `defaults/main.yml` will be used.
+* The `[motd_group]` block lists the hostname(s) that you intent to apply this script to.
+  * The variable `more_motd_entries=` is optional and specifies which MOTD messages are unique to that host and not installed on every host.  If not defined here then nothing else will be added to `enable_custom_motd_entries` list.
+
+---
+
+### Review `defaults/main.yml` to define the defaults
+
+The `defaults/main.yml` can be used to configure which default messages (installed by OS) are disabled and which new ones are to be added and enabled.
+
+#### Default Message Files to Disabled
 
 This block defines existing messages which will be disabled by simply removing the execute bit from them:
 
 ```yaml
-# Define Message of the Day items to disable by removing -x from file
-default_motd_entries_to_disable:
-  - /etc/update-motd.d/10-help-text
-  - /etc/update-motd.d/80-esm
-  - /etc/update-motd.d/80-livepatch
+motd_entries:
+  # Define Message of the Day items to disable by removing -x from file
+  to_disable:
+    - "10-help-text"
+    - "80-esm"
+    - "80-livepatch"
 ```
 
 Some older version of Ubuntu used symlinks, this block can unlink them:
 
 ```yaml
-# Define Message of the Day items which need to be unlinked (remove -x does not work)
-default_motd_entries_to_unlink:
-  - /etc/update-motd.d/50-landscape-sysinfo
+motd_entries:
+  # Define Message of the Day items which need to be unlinked (remove -x does not work)
+  to_unlink:
+    - "50-landscape-sysinfo"
 ```
 
-The Ubuntu NEWS is pretty much SPAM.  It is also disabled in this block:
+The Ubuntu NEWS is pretty much SPAM:
 
 ```yaml
 # Display the Ubuntu News Message - 0 = disable, 1 = enable
@@ -57,16 +95,37 @@ show_ubuntu_news_message: '0'
 
 ### Enhanced Message Files to Enable
 
-The following defines the new message files from the customized MOTD repo which will be enabled. This is not all of them, this is the basic few I find most handy.
+The following defines the base set of new message files from the customized MOTD repo which will be enabled.  The selected message files are applied to all systems.  Message files to be enabled on specific systems are defined below.
 
 ```yaml
-# Define Custom Message of the Day files to ENABLE from the GIT Repo
-enable_custom_motd_entries:
-  - 10-hostname-color
-  - 20-sysinfo
-  - 30-zpool-bar
-  - 36-diskstatus
-  - 40-services
+motd_entries:
+  # Define Custom Message of the Day files to ENABLE from the GIT Repo to all hosts
+  enable_these_for_all_hosts:
+  #  - 10-hostname                 # Blah no color hostname
+    - 10-hostname-color
+    - 20-sysinfo
+  #  - 20-uptime                   # Standard uptime message  
+    - 30-zpool-bar                # ZFS Usage Graphs
+    - 36-diskstatus               # Disks, Temps, Test Results
+    - 40-services                 # Status of Services
+  #  - 50-fail2ban                 # Fail2ban Summary (standard)
+  #  - 50-fail2ban-status          # Fail2ban status per jail
+  #  - 60-lxd                      # Status of lxd containers
+  #  - 60-docker                   # Status of Deployed Docker Containers
+```
+
+### System Specific Message Files to Enable
+
+Some message files don't apply to all servers such as LXD or Docker.  To enable these on specific systems you can define it within the inventory file per host via `more_motd_entries` variable:
+
+#### Specify via Inventory File
+
+```shell
+[motd_group:vars]
+enable_these_for_all_hosts='["10-hostname-color", "20-sysinfo", "30-zpool-bar", "40-services"]'
+
+[motd_group]
+testlinux.example.com more_motd_entries='["60-docker"]'
 ```
 
 ### Report Temperatures in C or F
@@ -78,15 +137,29 @@ The temperature readings can be displayed in Celsius or Fahrenheit by adjusting 
 hddtemp_temp_unit: "F"
 ```
 
-### Running the Smartmon Tools with ZFS Support Playbook
+---
 
-By default this is applied to `hosts: all` defined in the inventory file.  Unsupported platforms are skipped.
+### Running the Custom Message of the Day (MOTD) with ZFS Support Playbook
+
+This is an example playbook named `motd-zfs-smartd.yml` that can be used to define hosts, the custom MOTD messages to deploy and which MOTD messages are host specific:
+
+```yml
+[motd_group:vars]
+ansible_user=ansible
+ansible_ssh_private_key_file=/home/rich/.ssh/ansible
+ansible_python_interpreter=/usr/bin/python3
+enable_custom_motd_entries='["10-hostname-color", "20-sysinfo", "30-zpool-bar", "40-services"]'
+
+[motd_group]
+k3s01.example.com
+testlinux.example.com more_motd_entries='["60-docker"]'
+```
 
 ```bash
-ansible-playbook -i inventory install_smartmontools.yml
+ansible-playbook -i inventory motd-zfs-smartd.yml
 
 # Use Ansible's limit parameter to specify individual hostname to run on:
-ansible-playbook -i inventory install_smartmontools.yml -l acepc01.domain.com
+ansible-playbook -i inventory motd-zfs-smartd.yml -l testlinux.example.com
 ```
 
 _NOTE: You would want to run this again anytime a disk device is replaced to make sure `smartmontools` has added the device to its testing schedule. Or you can manually update the `/etc/smartd.conf` file._
@@ -127,7 +200,7 @@ Device: /dev/disk/by-id/ata-Samsung_SSD_840_Series_S14GNEACB04928H [SAT], will d
 
 ### Altering the Testing Schedule
 
-The default time configured for short test is roughly 2:00 in the morning and long test roughly at 03:00 in the morning. This can be changed by editing `install_smartmontools.yml` block:
+The default time configured for short test is roughly 2:00 in the morning and long test roughly at 03:00 in the morning. This can be changed by editing `defaults/main.yml` block:
 
 ```yaml
   # Define when smartctl shot and long test will take place. 
@@ -194,7 +267,7 @@ _NOTE: Be mindful of all the single and double quotes when adding an entry these
 By default this is applied to `hosts: all` defined in the inventory file.  Unsupported platforms are skipped.  The customized `hddtemp` database entries will be added to all hosts.
 
 ```text
-$ ansible-playbook -i inventory install_smartmontools.yml -l <remote_host_name>
+$ ansible-playbook -i inventory motd-zfs-smartd.yml -l <remote_host_name>
 ```
 
 Once completed, `hddtemp` should now be able to report the temperature of the device:
