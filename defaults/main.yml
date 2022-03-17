@@ -1,4 +1,74 @@
 ---
+# have hddtemp report units in C or F
+hddtemp_temp_unit: "F"
+
+# Define GIT repo to use for customized Message of the Day
+motd_git_repo: "https://gitea.rich-durso.us/reefland/motd"
+
+# Location to store Message of the Day files from above GIT Repo
+git_root_path: "/root/git"
+
+# Location where Message of the Day system files are found:
+motd_path: "/etc/update-motd.d"
+
+# Display the Ubuntu News Message - 0 = disable, 1 = enable
+# value set within: /etc/default/motd-news
+show_ubuntu_news_message: '0'
+
+motd_entries:
+  # Define Message of the Day items to disable by removing -x from file
+  to_disable:
+    - "10-help-text"
+    - "80-esm"
+    - "80-livepatch"
+
+  # Define Message of the Day items which need to be unlinked (remove -x does not work)
+  to_unlink:
+    - "50-landscape-sysinfo"
+
+  # Define Message of the Day items to disable by file globs (wildcards) by removing the -x from the file
+  # The intent is to disable message files in ranges that will be applied below.
+  # This allows message files removed from enable lists get disabled
+  file_globs_to_disable:
+    - "10-*"
+    - "20-*"
+    - "30-*"
+    - "40-*"
+    - "50-*"
+    - "60-*"
+
+  # Define Custom Message of the Day files to ENABLE from the GIT Repo to all hosts
+  enable_these_for_all_hosts:
+  #  - 10-hostname                 # Blah no color hostname
+    - 10-hostname-color
+    - 20-sysinfo
+  #  - 20-uptime                   # Standard uptime message  
+    - 30-zpool-bar                # ZFS Usage Graphs
+    - 36-diskstatus               # Disks, Temps, Test Results
+    - 40-services                 # Status of Services
+  #  - 50-fail2ban                 # Fail2ban Summary (standard)
+  #  - 50-fail2ban-status          # Fail2ban status per jail
+  #  - 60-lxd                      # Status of lxd containers
+  #  - 60-docker                   # Status of Deployed Docker Containers
+
+# Define when smartctl shot and long test will take place. 
+# Format is: MM/DD/d/HH, where:
+
+# MM = Month of the year, expressed with two decimal digits. The range is from 01 (January)
+#      to 12 (December) inclusive. Do not use a single decimal digit or the match will always fail!
+# DD = Day of the month, expressed with two decimal digits. The range is from 01 to 31 inclusive. 
+#      Do not use a single decimal digit or the match will always fail!
+# d  = Day of the week, expressed with one decimal digit. The range is from 1 (Monday) to 7 (Sunday)
+#      inclusive.
+# HH = Hour of the day, written with two decimal digits, and given in hours after midnight. The 
+#      range is 00 (midnight to just before 1am) to 23 (11pm to just before midnight) inclusive.
+#      Do not use a single decimal digit or the match will always fail!
+
+# Use a ".." as double digit and "." as any single digit.
+
+smartd_short_test: '../.././02'   # 2AM every day
+smartd_long_test:  '../15/./03'   # 3AM on the 15th of every month
+
 # manual_entries_to_hddtemp - manually add entries for which hddtemp cannot discover.
 #  $ sudo hddtemp /dev/sda
 #  If it shows: WARNING: Drive /dev/sda doesn't seem to have a temperature sensor.
