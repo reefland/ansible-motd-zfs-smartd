@@ -1,15 +1,13 @@
 #
-# This helper script configures the system for our custom Message of the Day
-# GIT repository.
+# This helper script configures the system for a custom Message of the Day GIT repository.
 #
 
 - name: Install and Apply Message of the Day Settings Block
-  become: true
   block:
   ###[ Install Packages ]######################################################
-  - name: Install packages needed for Message of the Day and hddtemp
+  - name: Install packages needed for Message of the Day
     apt:
-      name: ['git','update-motd','figlet','lolcat','hddtemp','bc','bsdmainutils']
+      name: ['git','update-motd','figlet','lolcat','bc','bsdmainutils']
       state: present
       install_recommends: no
     when:
@@ -67,43 +65,6 @@
     when:
     - ansible_distribution == 'Ubuntu'
   
-  ###[ Configure HDDTemp ]#####################################################
-
-  # HDDTemp may not detect Temperature Sensors for SSDs, add manual entries
-  - name: Add manual entries to /etc/hddtemp.db
-    lineinfile:
-      path: "/etc/hddtemp.db"
-      regexp: "^{{item}}"
-      line: "{{item}}"
-      state: present
-    loop: "{{manual_entries_to_hddtemp|list}}"
-
-  # Get the last device letter from each active device, this is needed for hddtmp monitoring
-  # If "disk_devices" contains ['sda','sdb','sdc'] then device_letters is "abc"
-  - name: Construct device letter string
-    set_fact:
-      device_letters: "{{device_letters|default('') + item[-1]}}"
-    loop:
-     "{{disk_devices}}"
-
-  # hddtemp can only take a limited number of devices; which is a limit on the number of
-  # parameters which can be passed via the command line.  Break up the disk device list 
-  # into chunks the size defined by "hddtemp_num_devices"
-  
-  - name: "Chunk device letter string by {{hddtemp_num_devices}}"
-    set_fact:
-      device_letters: "{{ device_letters | regex_findall('.{1,' + hddtemp_num_devices|string +'}') }}"
-
-  - name: Creates @reboot CRON entry for HDDTemp instances
-    cron:
-      name: "Load hddtemp at reboot for port {{hddtemp_port+hddtemp_num_instances}}"
-      special_time: reboot
-      job: "/usr/sbin/hddtemp -d /dev/sd[{{item}}] --unit={{hddtemp_temp_unit}} --listen=localhost --port={{hddtemp_port+hddtemp_num_instances}}"
-    loop:
-      "{{device_letters}}"
-    loop_control:
-      index_var: hddtemp_num_instances
-
   ###[ Configure Custom Message of the Day ]###################################
   - name: Create the GIT directory if does not exist already
     file: 
@@ -147,9 +108,6 @@
       group: root
       force: yes
     when: my_stat.stat.exists
-
-  when:
-  - ansible_os_family == "Debian"
 
   tags:
   - setup_motd

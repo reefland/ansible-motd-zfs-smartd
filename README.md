@@ -165,6 +165,8 @@ ansible-playbook -i inventory motd-zfs-smartd.yml -l testlinux.example.com
 
 _NOTE: You would want to run this again anytime a disk device is replaced to make sure `smartmontools` has added the device to its testing schedule. Or you can manually update the `/etc/smartd.conf` file._
 
+---
+
 ### Drive Testing Results
 
 When the Customized Message of the Day `disk status:` states a drive is `without error` it is parsing that information from the device's last test result:
