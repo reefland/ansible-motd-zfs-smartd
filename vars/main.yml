@@ -7,3 +7,6 @@ hddtemp_num_devices: 4
 # The base number is incremented by one for every "hddtemp_num_devices"
 # number of devices.
 hddtemp_port: 7634
+
+# Location where Message of the Day system files are found:
+motd_path: "/etc/update-motd.d"
