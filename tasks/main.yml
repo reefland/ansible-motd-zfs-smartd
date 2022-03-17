@@ -1,0 +1,15 @@
+
+- include_role: 
+      name: helper_tasks
+      tasks_from: 01_detect_disk_devices
+  tags:
+    - always
+
+- name: Include Task Files
+  include_tasks: "{{task_names}}"
+  tags: ["always"]
+  loop:
+    - 02_setup_smartmontools.yml
+    - 02_setup_motd.yml
+  loop_control:
+    loop_var: task_names
