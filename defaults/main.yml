@@ -1,7 +1,5 @@
 ---
-# have hddtemp report units in C or F
-hddtemp_temp_unit: "F"
-
+###[ Customized Message of the Day Settings ]######################################################
 # Define GIT repo to use for customized Message of the Day
 motd_git_repo: "https://gitea.rich-durso.us/reefland/motd"
 
@@ -48,6 +46,20 @@ motd_entries:
   #  - 60-lxd                      # Status of lxd containers
   #  - 60-docker                   # Status of Deployed Docker Containers
 
+###[ Message of the day Services overrides ]#######################################################
+# The "40-services" service is from another repository with a default set of services to include
+# within the Message of the Day screen.  This section to define a set of services to replace
+# the services which are hard coded.
+
+services_list_override_for_all_hosts:
+ - "fail2ban"
+ - "ufw"
+ - "netdata"
+ - "zed"
+ - "smartd"
+ - "postfix"
+
+###[ Smartmon Tools Settings ]#####################################################################
 # Define when smartctl shot and long test will take place. 
 # Format is: MM/DD/d/HH, where:
 
@@ -65,6 +77,11 @@ motd_entries:
 
 smartd_short_test: '../.././02'   # 2AM every day
 smartd_long_test:  '../15/./03'   # 3AM on the 15th of every month
+
+
+###[ HDD Temp Settings ]###########################################################################
+# have hddtemp report units in C or F
+hddtemp_temp_unit: "F"
 
 # manual_entries_to_hddtemp - manually add entries for which hddtemp cannot discover.
 #  $ sudo hddtemp /dev/sda

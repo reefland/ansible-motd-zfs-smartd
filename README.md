@@ -46,16 +46,19 @@ Add something like the following:
 
 ```shell
 [motd_group:vars]
-enable_custom_motd_entries='["10-hostname-color", "20-sysinfo", "30-zpool-bar", "40-services"]'
+enable_these_for_all_hosts='["10-hostname-color", "20-sysinfo", "30-zpool-bar", "40-services"]'
+services_list_override_for_all_hosts='["fail2ban", "zed", "smartd"]'
 
 [motd_group]
-testlinux.example.com more_motd_entries='["60-docker"]'
+testlinux.example.com more_motd_entries='["60-docker"]' more_services_entries='["docker"]'
 ```
 
 * The `[motd_group:vars]` block defines variables that will be applied to all systems defined in the group and can override variables defined in `defaults/main.yml`.
-  * The variable `enable_custom_motd_entries=` is optional and specifies which MOTD messages are to be applied to all systems defined in this group.  If not defined here the value in `defaults/main.yml` will be used.
+  * The variable `enable_these_for_all_hosts=` is optional and specifies which MOTD messages are to be applied to all systems defined in this group.  If not defined here the value in `defaults/main.yml` will be used.
+  * The variable `services_list_override_for_all_hosts=` is optional and specifies which services the service MOTD file will report on. This is applied to all systems defined in this group. If not defined here the value in `defaults/main.yml` will be used.
 * The `[motd_group]` block lists the hostname(s) that you intent to apply this script to.
-  * The variable `more_motd_entries=` is optional and specifies which MOTD messages are unique to that host and not installed on every host.  If not defined here then nothing else will be added to `enable_custom_motd_entries` list.
+  * The variable `more_motd_entries=` is optional and specifies which MOTD messages are unique to that host and not installed on every host.  If not defined here then nothing else will be added to `enable_these_for_all_hosts` list.
+  * The variable `more_services_entries=` is optional and specifies which additional services the MOTD service file should report on for the specific host.  If not defined here then nothing else will be added to `services_list_override_for_all_hosts=` list.
 
 ---
 
@@ -95,7 +98,7 @@ show_ubuntu_news_message: '0'
 
 ### Enhanced Message Files to Enable
 
-The following defines the base set of new message files from the customized MOTD repo which will be enabled.  The selected message files are applied to all systems.  Message files to be enabled on specific systems are defined below.
+The following defines the base set of new message files from the customized MOTD repo which will be enabled.  The selected message files are applied to all systems.  Message files to be enabled on specific systems are defined below via the Inventory File.
 
 ```yaml
 motd_entries:
@@ -116,7 +119,7 @@ motd_entries:
 
 ### System Specific Message Files to Enable
 
-Some message files don't apply to all servers such as LXD or Docker.  To enable these on specific systems you can define it within the inventory file per host via `more_motd_entries` variable:
+Some MOTD message files don't apply to all servers such as LXD or Docker.  To enable these on specific systems you can define it within the inventory file per host via `more_motd_entries` variable:
 
 #### Specify via Inventory File
 
@@ -126,6 +129,45 @@ enable_these_for_all_hosts='["10-hostname-color", "20-sysinfo", "30-zpool-bar", 
 
 [motd_group]
 testlinux.example.com more_motd_entries='["60-docker"]'
+```
+
+---
+
+### Customize Services to Report on
+
+The following defines the base set of services to report status on.  The MOTD repo services file has a hard coded list of services. This section specifically lets your customize this MOTD service list:
+
+![Service MOTD Report](images/services_motd_report.png)
+
+The list below will override the hard coded services list and will be applied to all systems in this group.  Services to report on for specific systems are defined below via the Inventory File.
+
+```yaml
+###[ Message of the day Services overrides ]#######################################################
+# The "40-services" service is from another repository with a default set of services to include
+# within the Message of the Day screen.  This section to define a set of services to replace
+# the services which are hard coded.
+
+services_list_override_for_all_hosts:
+ - "fail2ban"
+ - "ufw"
+ - "netdata"
+ - "zed"
+ - "smartd"
+ - "postfix"
+```
+
+### System Specific Services to Report on
+
+Some services don't apply to all servers such as LXD or Docker.  To enable these on specific systems you can define it within the inventory file per host via `more_services_entries` variable:
+
+#### Specify via Inventory File
+
+```shell
+[motd_group:vars]
+services_list_override_for_all_hosts='["fail2ban", "zed", "smartd"]'
+
+[motd_group]
+testlinux.example.com more_services_entries='["docker"]'
 ```
 
 ---

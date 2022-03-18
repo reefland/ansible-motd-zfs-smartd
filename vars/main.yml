@@ -10,3 +10,6 @@ hddtemp_port: 7634
 
 # Location where Message of the Day system files are found:
 motd_path: "/etc/update-motd.d"
+
+# Service File to customize services to check status on
+motd_service_file: "40-services"
