@@ -3,9 +3,9 @@
 # regular testing scheduler
 #
 ---
-- name: Install and Configure SmartmonTools Block
+- name: Install and Configure SmartMon Tools Block
   block:
-  - name: Install packages for SmartMonTools
+  - name: Install packages for SmartMon Tools
     apt:
       name: ['smartmontools']
       state: present
