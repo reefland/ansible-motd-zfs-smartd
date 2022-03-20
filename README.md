@@ -220,9 +220,29 @@ _NOTE: You would want to run this again anytime a disk device is replaced to mak
 
 ### Drive Testing Results
 
+#### Without Error
+
 When the Customized Message of the Day `disk status:` states a drive is `without error` it is parsing that information from the device's last test result:
 
 ```text
 disk status:
   Samsung_SSD_840_928H (sda):  73F | without error
+```
+
+#### PASSED or FAILED
+
+When a devices test result is not found (either not supported, not performed, log purged, etc) then the `smartctl` self assessment status will be displayed which should be a simple `PASSED` or `FAILED!` value.  It is still possible to show `PASSED` and have device issues. This is **not** an equivalent of `without error`.
+
+```text
+disk status:
+  Samsung_SSD_980_1TB_316T (nvme0n1):  98F | PASSED
+```
+
+#### Untested[]
+
+When no test result can be found, and no self assessment value can be obtained from `smartctl` then the device will simply report `untested[]`. If any unexpected result is found that would be shown within the square brackets `[]`.  Empty brackets indicate absolutely nothing was found. This is expected with environments such as Virtual Box.
+
+```text
+disk status:
+  VBOX_HARDDISK_eb03 (sda):  ERR | untested[] 
 ```
