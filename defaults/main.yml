@@ -1,7 +1,7 @@
 ---
 ###[ Customized Message of the Day Settings ]######################################################
 # Define GIT repo to use for customized Message of the Day
-motd_git_repo: "https://gitea.rich-durso.us/reefland/motd"
+motd_git_repo: "https://github.com/reefland/motd"
 
 # Location to store Message of the Day files from above GIT Repo
 git_root_path: "/root/git"
