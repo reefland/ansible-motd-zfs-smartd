@@ -16,7 +16,7 @@ hddtemp_temp_unit: "F"
 
 ## Adding Custom Temperature Sensors to HDDTemp Database
 
-The `hddtemp` utility may have trouble finding temperature sensors on more modern SSDs or NVMe disk devices.  This is because the manufactures have changes the S.M.A.R.T. attribute used to hold the information.  The steps below show that `hddtemp` was unable to locate a temperature sensor for a Samsung SSD 840 Series device.
+The `hddtemp` utility may have trouble finding temperature sensors on more modern SSD devices (and does not support NVMe devices).  This is because the manufactures have changes the S.M.A.R.T. attribute used to hold the information.  The steps below show that `hddtemp` was unable to locate a temperature sensor for a Samsung SSD 840 Series device.
 
 ```shell
  $ sudo hddtemp /dev/sda
@@ -52,7 +52,7 @@ Where:
 
 _NOTE: Be mindful of all the single and double quotes when adding an entry these are needed for proper yaml parsing._
 
-### Re-run the Smartmon Tools with ZFS Support Playbook
+### Re-run the Playbook
 
 By default this is applied to `[motd_group]` defined in the inventory file.  Unsupported platforms are skipped.  The customized `hddtemp` database entries will be added to all hosts defined in this block.
 

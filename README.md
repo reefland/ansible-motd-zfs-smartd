@@ -9,9 +9,8 @@ Smartmon Tools are used to test and monitor disk devices. HDDTemp is used to mon
 ## TL;DR
 
 * Standard Message of the Day (MOTD) output can be disabled or replaced with enhanced versions.
-* HDD/SSD Testing will be provided by Smartmon Tools.
-* HDD/SSD Testing Schedulers can be specified.
-* Each system login will show you the status of the last device test as well as its current temperature
+* HDD/SSD Testing and Testing Schedule (can be customized) will be provided by Smartmon Tools.
+* Each system login will show you the status of the last device test as well as its current temperature.
 
 ---
 
@@ -28,11 +27,10 @@ The following packages will be installed:
 
 * [smartmontools](https://en.wikipedia.org/wiki/Smartmontools) retrieves the S.M.A.R.T. (Selt-Monitoring, Analysis and Reporting Technology) attributes from the disk devices including temperature and performs periodic testing of the disk devices
 * [hddtemp](https://wiki.archlinux.org/index.php/Hddtemp) reads temperature S.M.A.R.T.  attribute from disk devices. This will be run as a daemon
-* [git](https://en.wikipedia.org/wiki/Git) needed to retrieve files from [Custom Message of the Day with ZFS Support](https://gitea.rich-durso.us/reefland/motd) Repository
+* [git](https://en.wikipedia.org/wiki/Git) needed to retrieve files from [Custom Message of the Day with ZFS Support](https://github.com/reefland/motd) Repository
 * [update-motd](http://manpages.ubuntu.com/manpages/focal/man5/update-motd.5.html) is a framework by which `motd` is dynamically assembled from a collection of scripts at login
 * [figlet](https://en.wikipedia.org/wiki/FIGlet) to generate the hostname as a larger banner font
 * [lolcat](http://manpages.ubuntu.com/manpages/focal/man6/lolcat.6.html) provides a colorful rendering of the `figlet` hostname banner
-* [bc](https://en.wikipedia.org/wiki/Bc_(programming_language)) a basic calculator used for working with temperature values
 * [update-notifier-common](https://packages.ubuntu.com/focal/update-notifier-common) provides some of the MOTD scripts required including notification if a reboot is required
 * [bsdmainutils](https://launchpad.net/ubuntu/focal/+package/bsdmainutils) provides text parsing utilities ported over from BSD. Utilities such as `column` are used to present disk information.
 
@@ -178,6 +176,8 @@ testlinux.example.com more_services_entries='["docker"]'
   * Includes how to add custom entries to HDD Temp database if your device is not supported
 * Review [Smartmon Testing Settings](docs/smartmon-tests.md)
   * Includes how to view and set testing schedules
+* Review [NVME Device Settings](docs/nvme-settings.md)
+  * How to add support for more than just Samsung NVMe devices
   
 ---
 
