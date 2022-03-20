@@ -52,12 +52,15 @@ motd_entries:
 # the services which are hard coded.
 
 services_list_override_for_all_hosts:
- - "fail2ban"
- - "ufw"
- - "netdata"
- - "zed"
- - "smartd"
- - "postfix"
+  - "fail2ban"
+  - "ufw"
+  - "netdata"
+  - "zed"
+  - "smartd"
+  - "postfix"
+
+# Set the number service columns to display
+services_columns_to_display: 4
 
 ###[ Smartmon Tools Settings ]#####################################################################
 # Define when smartctl shot and long test will take place. 

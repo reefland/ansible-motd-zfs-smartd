@@ -15,6 +15,12 @@
       path: "{{motd_path}}/{{motd_service_file}}"
       regexp: '^(?m)services=.*$'
       replace: 'services=({{services_list}})'
-  
+
+  - name: Replace existing number of columns to display with custom number
+    replace: 
+      path: "{{motd_path}}/{{motd_service_file}}"
+      regexp: '^(?m)COLUMNS=.*$'
+      replace: 'COLUMNS=({{services_columns_to_display}})'
+
   tags:
   - updated_services_motd_file
