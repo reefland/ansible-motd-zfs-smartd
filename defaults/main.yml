@@ -82,10 +82,13 @@ smartd_short_test: '../.././02'   # 2AM every day
 smartd_long_test:  '../15/./03'   # 3AM on the 15th of every month
 
 
-###[ HDD Temp Settings ]###########################################################################
-# have hddtemp report units in C or F
-hddtemp_temp_unit: "F"
+###[ Display Temperature Units ]###################################################################
+# This will adjust HDDTemp to display temperature values in F or C.  It will also enable F to C
+# conversions for temperatures pulled directly from smartctl (such as for NVMe devices)
+display_temp_unit: "F"
 
+
+###[ HDD Temp Settings ]###########################################################################
 # manual_entries_to_hddtemp - manually add entries for which hddtemp cannot discover.
 #  $ sudo hddtemp /dev/sda
 #  If it shows: WARNING: Drive /dev/sda doesn't seem to have a temperature sensor.

@@ -8,8 +8,10 @@
 The temperature readings can be displayed in Celsius or Fahrenheit by adjusting "C" or "F" in the block below:
 
 ```yaml
-# have hddtemp report units in C or F
-hddtemp_temp_unit: "F"
+###[ Display Temperature Units ]###################################################################
+# This will adjust HDDTemp to display temperature values in F or C.  It will also enable F to C
+# conversions for temperatures pulled directly from smartctl (such as for NVMe devices)
+display_temp_unit: "F"
 ```
 
 ---

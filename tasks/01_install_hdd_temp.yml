@@ -41,7 +41,7 @@
     cron:
       name: "Load hddtemp at reboot for port {{hddtemp_port+hddtemp_num_instances}}"
       special_time: reboot
-      job: "/usr/sbin/hddtemp -d /dev/sd[{{item}}] --unit={{hddtemp_temp_unit}} --listen=localhost --port={{hddtemp_port+hddtemp_num_instances}}"
+      job: "/usr/sbin/hddtemp -d /dev/sd[{{item}}] --unit={{display_temp_unit}} --listen=localhost --port={{hddtemp_port+hddtemp_num_instances}}"
     loop:
       "{{device_letters}}"
     loop_control:

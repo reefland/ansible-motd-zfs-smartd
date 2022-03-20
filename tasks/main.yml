@@ -13,5 +13,6 @@
     - 02_setup_smartmontools.yml
     - 02_setup_motd.yml
     - 03_updated_services_file.yml
+    - 04_updated_disk_status_file.yml
   loop_control:
     loop_var: task_names

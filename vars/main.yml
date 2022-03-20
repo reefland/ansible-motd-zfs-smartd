@@ -13,3 +13,6 @@ motd_path: "/etc/update-motd.d"
 
 # Service File to customize services to check status on
 motd_service_file: "40-services"
+
+# Disk Status File to customize
+disk_status_file: "36-diskstatus"
