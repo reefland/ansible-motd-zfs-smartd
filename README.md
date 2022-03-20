@@ -192,18 +192,16 @@ services_columns_to_display: 4
 
 ## Running the Custom Message of the Day (MOTD) with ZFS Support Playbook
 
-This is an example playbook named `motd-zfs-smartd.yml` that can be used to define hosts, the custom MOTD messages to deploy and which MOTD messages are host specific:
+This is an example playbook named `motd-zfs-smartd.yml`:
 
 ```yml
-[motd_group:vars]
-ansible_user=ansible
-ansible_ssh_private_key_file=/home/rich/.ssh/ansible
-ansible_python_interpreter=/usr/bin/python3
-enable_custom_motd_entries='["10-hostname-color", "20-sysinfo", "30-zpool-bar", "40-services"]'
+- name: Install Custom Message of the Day (MOTD), Smartmon Tools, and HDDtemp
+  hosts: motd_group
+  become: true
+  gather_facts: true
 
-[motd_group]
-k3s01.example.com
-testlinux.example.com more_motd_entries='["60-docker"]'
+  roles:
+    - role: motd-zfs-smartd
 ```
 
 ```bash
