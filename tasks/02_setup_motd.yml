@@ -7,7 +7,7 @@
   ###[ Install Packages ]######################################################
   - name: Install packages needed for Message of the Day
     apt:
-      name: ['git','update-motd','figlet','lolcat','bc','bsdmainutils']
+      name: ['git','update-motd','figlet','lolcat','bsdmainutils']
       state: present
       install_recommends: no
     when:
@@ -35,10 +35,12 @@
       state: file
     loop: "{{ my_stat.results | selectattr('stat.exists') | map(attribute='item') | list }}"
 
+  # This will show some errors if no file globs exist.
   - name: Turn off MOTD entries defined by file globs
     shell:
       cmd: "chmod -x {{motd_path}}/{{item}}"
     with_items: "{{motd_entries.file_globs_to_disable|default([])}}"
+    ignore_errors: yes
 
   - name: Check if MOTD files to unlink exist
     stat:
