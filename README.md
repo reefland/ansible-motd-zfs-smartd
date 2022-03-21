@@ -1,6 +1,6 @@
-# Custom Message of the Day (MOTD), Smartmon Tools, HDDTemp with ZFS Support
+# Ansible Role for Custom Message of the Day (MOTD), Smartmon Tools, HDDTemp with ZFS Support
 
-Smartmon Tools are used to test and monitor disk devices. HDDTemp is used to monitor temperature of disk devices (SATA, SSD, NVMe all typically have sensors).  This information is gathered in a customized Message of the Day which is presented upon a SSH login along with status of your ZFS Pools and available Patches.
+Ansible role used to deploy customized Message of the Day. Dress up your login welcome screen and provide informative information about the status of the system.
 
 ![Sample Login Screen](images/colors_from_dropdown.png)
 
@@ -8,9 +8,11 @@ Smartmon Tools are used to test and monitor disk devices. HDDTemp is used to mon
 
 ## TL;DR
 
-* Standard Message of the Day (MOTD) output can be disabled or replaced with enhanced versions.
+* Standard Message of the Day (MOTD) output can be disabled and replaced with enhanced versions.
 * HDD/SSD Testing and Testing Schedule (can be customized) will be provided by Smartmon Tools.
+* Standardized services lists for all hosts and additional list for specific hosts can be defined.
 * Each system login will show you the status of the last device test as well as its current temperature.
+* Additional MOTD files are provided and can be enabled, new ones can be added.
 
 ---
 
@@ -18,6 +20,7 @@ Smartmon Tools are used to test and monitor disk devices. HDDTemp is used to mon
 
 * SSH Server configured to display message of the day (enabled by default on Ubuntu)
 * Ubuntu 18.04 or 20.04 releases
+* Other systems probably work fine, untested. Let me know.
 
 ---
 
@@ -96,7 +99,7 @@ show_ubuntu_news_message: '0'
 
 ### Enhanced Message Files to Enable
 
-The following defines the base set of new message files from the customized MOTD repo which will be enabled.  The selected message files are applied to all systems.  Message files to be enabled on specific systems are defined below via the Inventory File.
+The following defines the base set of new message files from the [Custom Message of the Day with ZFS Support](https://github.com/reefland/motd) Repository which will be enabled.  The selected message files are applied to all systems.  Message files to be enabled on specific systems are defined below via the Inventory File.
 
 ```yaml
 motd_entries:
@@ -137,7 +140,7 @@ The following defines the base set of services to report status on.  The MOTD re
 
 ![Service MOTD Report](images/services_motd_report.png)
 
-The list below will override the hard coded services list and will be applied to all systems in this group.  Services to report on for specific systems are defined below via the Inventory File.
+The list below will replaced the hard coded services list and will be applied to all systems in this group.  Services to report on for specific systems are defined below via the Inventory File.
 
 ```yaml
 ###[ Message of the day Services overrides ]#######################################################
@@ -168,6 +171,8 @@ services_list_override_for_all_hosts='["fail2ban", "zed", "smartd"]'
 testlinux.example.com more_services_entries='["docker"]'
 ```
 
+In the example above, host `testlinux.example.com` will then have the 3 base services plus one extra service applied for 4 total services.
+
 #### Adjust Number of Columns to Display
 
 The number of columns to display the services list can be adjusted as needed:
@@ -186,8 +191,8 @@ services_columns_to_display: 4
 * Review [Smartmon Testing Settings](docs/smartmon-tests.md)
   * Includes how to view and set testing schedules
 * Review [NVME Device Settings](docs/nvme-settings.md)
-  * How to add support for more than just Samsung NVMe devices
-  
+* Review [Custom Message of the Day with ZFS Support](https://github.com/reefland/motd) repository for more detailed information.
+
 ---
 
 ## Running the Custom Message of the Day (MOTD) with ZFS Support Playbook
@@ -213,34 +218,3 @@ ansible-playbook -i inventory motd-zfs-smartd.yml -l testlinux.example.com
 ```
 
 _NOTE: You would want to run this again anytime a disk device is replaced to make sure `smartmontools` has added the device to its testing schedule. Or you can manually update the `/etc/smartd.conf` file._
-
----
-
-### Drive Testing Results
-
-#### Without Error
-
-When the Customized Message of the Day `disk status:` states a drive is `without error` it is parsing that information from the device's last test result:
-
-```text
-disk status:
-  Samsung_SSD_840_928H (sda):  73F | without error
-```
-
-#### PASSED or FAILED
-
-When a devices test result is not found (either not supported, not performed, log purged, etc) then the `smartctl` self assessment status will be displayed which should be a simple `PASSED` or `FAILED!` value.  It is still possible to show `PASSED` and have device issues. This is **not** an equivalent of `without error`.
-
-```text
-disk status:
-  Samsung_SSD_980_1TB_316T (nvme0n1):  98F | PASSED
-```
-
-#### Untested[]
-
-When no test result can be found, and no self assessment value can be obtained from `smartctl` then the device will simply report `untested[]`. If any unexpected result is found that would be shown within the square brackets `[]`.  Empty brackets indicate absolutely nothing was found. This is expected with environments such as Virtual Box.
-
-```text
-disk status:
-  VBOX_HARDDISK_eb03 (sda):  ERR | untested[] 
-```
