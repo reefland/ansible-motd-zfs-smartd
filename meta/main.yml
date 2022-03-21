@@ -1,0 +1,24 @@
+---
+galaxy_info:
+  author: Richard Durso
+  description: Easily customized message of the day (MOTD) login screen, with ZFS support, smartmon drive testing, drive temperatures, HDD, SSD and NVMe support, with per hosts customizations.
+
+  platforms:
+  - name: Ubuntu
+    versions:
+      - all
+
+  license: BSD
+
+  min_ansible_version: 1.2
+
+  galaxy_tags:
+    - MOTD
+    - ZFS
+    - smartctl
+    - login
+    - hddtemp
+    - SSD
+    - NVMe
+    - temperature
+
