@@ -28,6 +28,8 @@
       device_letters: "{{device_letters|default('') + item[-1]}}"
     loop:
      "{{disk_devices}}"
+    loop_control:
+      label: "{{disk_devices}}"
 
   # hddtemp can only take a limited number of devices; which is a limit on the number of
   # parameters which can be passed via the command line.  Break up the disk device list 
@@ -46,6 +48,7 @@
       "{{device_letters}}"
     loop_control:
       index_var: hddtemp_num_instances
+      label: "job: /usr/sbin/hddtemp -d /dev/sd[{{item}}]"
 
   tags:
   - install_hdd_temp
