@@ -7,7 +7,7 @@
     set_fact:
       services_list: "{{services_list|default('')}}\"{{item}}\" "
     with_items:
-      - "{{ services_list_override_for_all_hosts|default([]) }}"
+      - "{{ services_list_override|default([]) }}"
       - "{{ more_services_entries|default([]) }}"
 
   - name: Replace existing services list with custom list

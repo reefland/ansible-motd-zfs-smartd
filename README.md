@@ -48,7 +48,7 @@ Add something like the following if you use `INI` inventory format:
 ```ini
 [motd_group:vars]
 enable_these_motd_files='["10-hostname-color", "20-sysinfo", "30-zpool-bar", "40-services"]'
-services_list_override_for_all_hosts='["fail2ban", "zed", "smartd"]'
+services_list_override='["fail2ban", "zed", "smartd"]'
 
 [motd_group]
 testlinux.example.com more_motd_entries='["60-docker"]' more_services_entries='["docker"]'
@@ -56,10 +56,10 @@ testlinux.example.com more_motd_entries='["60-docker"]' more_services_entries='[
 
 * The `[motd_group:vars]` block defines variables that will be applied to all systems defined in the group and can override variables defined in `defaults/main.yml`.
   * The variable `enable_these_motd_files=` is optional and specifies which MOTD messages are to be applied to all systems defined in this group.  If not defined here the value in `defaults/main.yml` will be used.
-  * The variable `services_list.override_for_all_hosts=` is optional and specifies which services the service MOTD file will report on. This is applied to all systems defined in this group. If not defined here the value in `defaults/main.yml` will be used.
+  * The variable `services_list_override=` is optional and specifies which services the service MOTD file will report on. This is applied to all systems defined in this group. If not defined here the value in `defaults/main.yml` will be used.
 * The `[motd_group]` block lists the hostname(s) that you intent to apply this script to.
   * The variable `more_motd_entries=` is optional and specifies which MOTD messages are unique to that host and not installed on every host.  If not defined here then nothing else will be added to `enable_these_motd_files` list.
-  * The variable `more_services_entries=` is optional and specifies which additional services the MOTD service file should report on for the specific host.  If not defined here then nothing else will be added to `services_list.override_for_all_hosts=` list.
+  * The variable `more_services_entries=` is optional and specifies which additional services the MOTD service file should report on for the specific host.  If not defined here then nothing else will be added to `services_list_override=` list.
 
 I prefer to use `yaml` format:
 
@@ -78,13 +78,13 @@ all:
     ###[ MOTD, SMARTD with ZFS]################################################
     motd_group:
       hosts:
-        testlinux.example,com:
+        testlinux.example.com:
           more_motd_entries: ["60-docker"]
           more_services_entries: ["docker"]
 
       vars:
         enable_these_motd_files: ["10-hostname-color", "20-sysinfo", "30-zpool-bar", "40-services"]
-        services_list_override_for_all_hosts: ["fail2ban", "zed", "smartd"]
+        services_list_override: ["fail2ban", "zed", "smartd"]
 ```
 
 ---
@@ -149,12 +149,20 @@ Some MOTD message files don't apply to all servers such as LXD or Docker.  To en
 
 #### Specific Message File per Host via Inventory File
 
-```shell
+```ini
 [motd_group:vars]
-enable_these_for_all_hosts='["10-hostname-color", "20-sysinfo", "30-zpool-bar", "40-services"]'
+enable_these_motd_files='["10-hostname-color", "20-sysinfo", "30-zpool-bar", "40-services"]'
 
 [motd_group]
 testlinux.example.com more_motd_entries='["60-docker"]'
+```
+
+To make the list smaller than the base list for a specific host, then just define it for that host such as:
+
+```ini
+
+[motd_group]
+testlinux.example.com enable_these_motd_files='["10-hostname-color", "30-zpool-bar"]'
 ```
 
 ---
@@ -173,7 +181,7 @@ The list below will replaced the hard coded services list and will be applied to
 # within the Message of the Day screen.  This section to define a set of services to replace
 # the services which are hard coded.
 
-services_list_override_for_all_hosts:
+services_list_override:
   - "fail2ban"
   - "ufw"
   - "netdata"
@@ -190,7 +198,7 @@ Some services don't apply to all servers such as LXD or Docker.  To enable these
 
 ```shell
 [motd_group:vars]
-services_list_override_for_all_hosts='["fail2ban", "zed", "smartd"]'
+services_list_override='["fail2ban", "zed", "smartd"]'
 
 [motd_group]
 testlinux.example.com more_services_entries='["docker"]'
