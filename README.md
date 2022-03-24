@@ -43,11 +43,11 @@ The following packages will be installed:
 
 ### Edit your inventory document
 
-Add something like the following:
+Add something like the following if you use `INI` inventory format:
 
-```shell
+```ini
 [motd_group:vars]
-enable_these_for_all_hosts='["10-hostname-color", "20-sysinfo", "30-zpool-bar", "40-services"]'
+enable_these_motd_files='["10-hostname-color", "20-sysinfo", "30-zpool-bar", "40-services"]'
 services_list_override_for_all_hosts='["fail2ban", "zed", "smartd"]'
 
 [motd_group]
@@ -55,11 +55,37 @@ testlinux.example.com more_motd_entries='["60-docker"]' more_services_entries='[
 ```
 
 * The `[motd_group:vars]` block defines variables that will be applied to all systems defined in the group and can override variables defined in `defaults/main.yml`.
-  * The variable `enable_these_for_all_hosts=` is optional and specifies which MOTD messages are to be applied to all systems defined in this group.  If not defined here the value in `defaults/main.yml` will be used.
+  * The variable `enable_these_motd_files=` is optional and specifies which MOTD messages are to be applied to all systems defined in this group.  If not defined here the value in `defaults/main.yml` will be used.
   * The variable `services_list.override_for_all_hosts=` is optional and specifies which services the service MOTD file will report on. This is applied to all systems defined in this group. If not defined here the value in `defaults/main.yml` will be used.
 * The `[motd_group]` block lists the hostname(s) that you intent to apply this script to.
-  * The variable `more_motd_entries=` is optional and specifies which MOTD messages are unique to that host and not installed on every host.  If not defined here then nothing else will be added to `enable_these_for_all_hosts` list.
+  * The variable `more_motd_entries=` is optional and specifies which MOTD messages are unique to that host and not installed on every host.  If not defined here then nothing else will be added to `enable_these_motd_files` list.
   * The variable `more_services_entries=` is optional and specifies which additional services the MOTD service file should report on for the specific host.  If not defined here then nothing else will be added to `services_list.override_for_all_hosts=` list.
+
+I prefer to use `yaml` format:
+
+```yaml
+---
+###[ Define all Hosts ]########################################################
+all:
+  hosts:
+    testlinux.example.com:
+
+  vars:
+    ansible_python_interpreter: "/usr/bin/python3"
+    ansible_user: ansible
+    ansible_port: 22
+
+    ###[ MOTD, SMARTD with ZFS]################################################
+    motd_group:
+      hosts:
+        testlinux.example,com:
+          more_motd_entries: ["60-docker"]
+          more_services_entries: ["docker"]
+
+      vars:
+        enable_these_motd_files: ["10-hostname-color", "20-sysinfo", "30-zpool-bar", "40-services"]
+        services_list_override_for_all_hosts: ["fail2ban", "zed", "smartd"]
+```
 
 ---
 
@@ -102,9 +128,8 @@ show_ubuntu_news_message: '0'
 The following defines the base set of new message files from the [Custom Message of the Day with ZFS Support](https://github.com/reefland/motd) Repository which will be enabled.  The selected message files are applied to all systems.  Message files to be enabled on specific systems are defined below via the Inventory File.
 
 ```yaml
-motd_entries:
-  # Define Custom Message of the Day files to ENABLE from the GIT Repo to all hosts
-  enable_these_for_all_hosts:
+# Define Custom Message of the Day files to ENABLE from the GIT Repo to all hosts
+enable_these_motd_files:
   #  - 10-hostname                 # Blah no color hostname
     - 10-hostname-color
     - 20-sysinfo

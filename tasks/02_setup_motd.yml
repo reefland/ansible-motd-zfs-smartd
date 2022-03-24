@@ -35,12 +35,20 @@
       state: file
     loop: "{{ my_stat.results | selectattr('stat.exists') | map(attribute='item') | list }}"
 
-  # This will show some errors if no file globs exist.
-  - name: Turn off MOTD entries defined by file globs
-    shell:
-      cmd: "chmod -x {{motd_path}}/{{item}}"
-    with_items: "{{motd_entries.file_globs_to_disable|default([])}}"
-    ignore_errors: yes
+  ###[ Disabled ranges we want by file globs before enable again ]#############
+  - name: Check if MOTD files to turn off by file globs exist
+    find:
+      paths: "{{motd_path}}"
+      patterns: "{{motd_entries.file_globs_to_disable|default([])}}"
+    register: files_matched
+
+  - name: Turn off MOTD matching entries
+    command: "chmod -x {{item.path}}"
+    with_items: "{{ files_matched.files }}"
+    loop_control:
+      label: "{{ item.path }}"
+
+  #############################################################################
 
   - name: Check if MOTD files to unlink exist
     stat:
@@ -92,7 +100,7 @@
       group: root
       force: yes
     with_items: 
-      - "{{motd_entries.enable_these_for_all_hosts}}"
+      - "{{enable_these_motd_files}}"
       - "{{more_motd_entries|default([])}}"
 
   - name: Check if NEW MOTD File was Generated
