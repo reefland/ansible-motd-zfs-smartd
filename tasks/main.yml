@@ -1,18 +1,15 @@
-
-- include_role: 
-      name: helper_tasks
-      tasks_from: 01_detect_disk_devices
-  tags:
-    - always
+---
 
 - name: Include Task Files
   include_tasks: "{{task_names}}"
   tags: ["always"]
   loop:
+    - 01_detect_disk_devices.yml
     - 01_install_hdd_temp.yml
     - 02_setup_smartmontools.yml
     - 02_setup_motd.yml
     - 03_updated_services_file.yml
     - 04_updated_disk_status_file.yml
   loop_control:
+    label: "{{task_names}}"
     loop_var: task_names
