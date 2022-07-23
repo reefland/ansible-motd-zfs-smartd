@@ -65,21 +65,16 @@ I prefer to use `yaml` format:
 
 ```yaml
 ---
-###[ Define all Hosts ]########################################################
-all:
+###[ MOTD, SMARTD with ZFS]################################################
+motd_group:
   hosts:
-    ...
+    testlinux.example.com:
+      more_motd_entries: ["60-docker"]
+      more_services_entries: ["docker"]
 
-    ###[ MOTD, SMARTD with ZFS]################################################
-    motd_group:
-      hosts:
-        testlinux.example.com:
-          more_motd_entries: ["60-docker"]
-          more_services_entries: ["docker"]
-
-      vars:
-        enable_these_motd_files: ["10-hostname-color", "20-sysinfo", "30-zpool-bar", "40-services"]
-        services_list_override: ["fail2ban", "zed", "smartd"]
+  vars:
+    enable_these_motd_files: ["10-hostname-color", "20-sysinfo", "30-zpool-bar", "40-services"]
+    services_list_override: ["fail2ban", "zed", "smartd"]
 ```
 
 ---
