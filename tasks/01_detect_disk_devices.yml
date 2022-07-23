@@ -13,10 +13,11 @@
 - name: Detect Available Disk Devices Block
   block:
   # Include values: 8=[SATA, SCSI], 179=[MMC], 259=[NVMe]
+  # And device with a mountpoint (iSCSI?) will have slashes in it, that line is filtered out
   # The RO indicates if device is read-only (value 1), the awk filters to value 0 - not read-only
   - name: Detect available disk devices
     shell:
-      cmd: "lsblk -ndo name,mountpoint,ro --include '8,179,259' | awk '/0$/{print $1}'"
+      cmd: "lsblk -ndo name,mountpoint,ro --include '8,179,259' | awk '/^[a-z]{3,}+/ && !/[./]/ && /0$/{print $1}'"
     register: lsblk_devices
 
   - name: Set disk_devices value
