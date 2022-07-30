@@ -78,9 +78,9 @@
   ###[ Configure Custom Message of the Day ]###################################
   - name: Create the GIT directory if does not exist already
     file: 
-     path: "{{git_root_path|default('/root/git')}}"
-     state: directory
-     mode: '0750'
+      path: "{{git_root_path|default('/root/git')}}"
+      state: directory
+      mode: '0750'
 
   - name: Clone GIT repository - overwrite anything locally modified
     git:

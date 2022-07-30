@@ -28,7 +28,7 @@
       path: "/etc/smartd.conf"
       regexp: "^(\/dev\/disk\/by-id\/*)"
       state: absent
- 
+
   # Add one line per device to "/etc/smartd.conf" replace any existing line for device
   # ( -a) enables some common options
   # (-H) checks the SMART health status
