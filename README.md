@@ -19,7 +19,7 @@ Ansible role used to deploy customized Message of the Day. Dress up your login w
 ## Requirements
 
 * SSH Server configured to display message of the day (enabled by default on Ubuntu)
-* Ubuntu 18.04 or 20.04 releases
+* Ubuntu 18.04 through 22.04 releases tested
 * Other systems probably work fine, untested. Let me know.
 
 ---
@@ -121,12 +121,12 @@ The following defines the base set of new message files from the [Custom Message
 # Define Custom Message of the Day files to ENABLE from the GIT Repo to all hosts
 enable_these_motd_files:
   #  - 10-hostname                 # Blah no color hostname
-    - 10-hostname-color
-    - 20-sysinfo
+  - 10-hostname-color
+  - 20-sysinfo
   #  - 20-uptime                   # Standard uptime message  
-    - 30-zpool-bar                # ZFS Usage Graphs
-    - 36-diskstatus               # Disks, Temps, Test Results
-    - 40-services                 # Status of Services
+  - 30-zpool-bar                # ZFS Usage Graphs
+  - 36-diskstatus               # Disks, Temps, Test Results
+  - 40-services                 # Status of Services
   #  - 50-fail2ban                 # Fail2ban Summary (standard)
   #  - 50-fail2ban-status          # Fail2ban status per jail
   #  - 60-lxd                      # Status of lxd containers
