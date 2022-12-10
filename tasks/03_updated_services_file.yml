@@ -1,26 +1,24 @@
 # This script updated the default list of services hardcoded in the services MOTD file
 ---
 - name: Update Services MOTD File Services List Block
-  block:
-
-  - name:  Combine all Services into a space delimited list of services in a string
-    set_fact:
-      services_list: "{{services_list|default('')}}\"{{item}}\" "
-    with_items:
-      - "{{ services_list_override|default([]) }}"
-      - "{{ more_services_entries|default([]) }}"
-
-  - name: Replace existing services list with custom list
-    replace: 
-      path: "{{motd_path}}/{{motd_service_file}}"
-      regexp: '^(?m)services=.*$'
-      replace: 'services=({{services_list}})'
-
-  - name: Replace existing number of columns to display with custom number
-    replace: 
-      path: "{{motd_path}}/{{motd_service_file}}"
-      regexp: '^(?m)COLUMNS=.*$'
-      replace: 'COLUMNS=({{services_columns_to_display}})'
-
   tags:
-  - updated_services_motd_file
+    - updated_services_motd_file
+  block:
+    - name: Combine all Services into a space delimited list of services in a string
+      ansible.builtin.set_fact:
+        services_list: "{{ services_list | default('') }}\"{{ item }}\" "
+      with_items:
+        - "{{ services_list_override | default([]) }}"
+        - "{{ more_services_entries | default([]) }}"
+
+    - name: Replace existing services list with custom list
+      ansible.builtin.replace:
+        path: "{{ motd_path }}/{{ motd_service_file }}"
+        regexp: '^(?m)services=.*$'
+        replace: 'services=({{ services_list }})'
+
+    - name: Replace existing number of columns to display with custom number
+      ansible.builtin.replace:
+        path: "{{ motd_path }}/{{ motd_service_file }}"
+        regexp: '^(?m)COLUMNS=.*$'
+        replace: 'COLUMNS=({{ services_columns_to_display }})'

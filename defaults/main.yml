@@ -1,5 +1,5 @@
 ---
-###[ Customized Message of the Day Settings ]######################################################
+# [ Customized Message of the Day Settings ]#######################################################
 # Define GIT repo to use for customized Message of the Day
 motd_git_repo: "https://github.com/reefland/motd"
 
@@ -35,18 +35,18 @@ motd_entries:
 # Define Custom Message of the Day files to ENABLE from the GIT Repo to all hosts
 enable_these_motd_files:
   #  - 10-hostname                 # Blah no color hostname
-    - 10-hostname-color
-    - 20-sysinfo
-  #  - 20-uptime                   # Standard uptime message  
-    - 30-zpool-bar                # ZFS Usage Graphs
-    - 36-diskstatus               # Disks, Temps, Test Results
-    - 40-services                 # Status of Services
+  - 10-hostname-color
+  - 20-sysinfo
+  #  - 20-uptime                   # Standard uptime message
+  - 30-zpool-bar                # ZFS Usage Graphs
+  - 36-diskstatus               # Disks, Temps, Test Results
+  - 40-services                 # Status of Services
   #  - 50-fail2ban                 # Fail2ban Summary (standard)
   #  - 50-fail2ban-status          # Fail2ban status per jail
   #  - 60-lxd                      # Status of lxd containers
   #  - 60-docker                   # Status of Deployed Docker Containers
 
-###[ Message of the day Services overrides ]#######################################################
+# [ Message of the day Services overrides ]########################################################
 # The "40-services" service is from another repository with a default set of services to include
 # within the Message of the Day screen.  This section to define a set of services to replace
 # the services which are hard coded.
@@ -62,33 +62,33 @@ services_list_override:
 # Set the number service columns to display
 services_columns_to_display: 4
 
-###[ Smartmon Tools Settings ]#####################################################################
-# Define when smartctl shot and long test will take place. 
+# [ Smartmon Tools Settings ]######################################################################
+# Define when smartctl shot and long test will take place.
 # Format is: MM/DD/d/HH, where:
 
 # MM = Month of the year, expressed with two decimal digits. The range is from 01 (January)
 #      to 12 (December) inclusive. Do not use a single decimal digit or the match will always fail!
-# DD = Day of the month, expressed with two decimal digits. The range is from 01 to 31 inclusive. 
+# DD = Day of the month, expressed with two decimal digits. The range is from 01 to 31 inclusive.
 #      Do not use a single decimal digit or the match will always fail!
 # d  = Day of the week, expressed with one decimal digit. The range is from 1 (Monday) to 7 (Sunday)
 #      inclusive.
-# HH = Hour of the day, written with two decimal digits, and given in hours after midnight. The 
+# HH = Hour of the day, written with two decimal digits, and given in hours after midnight. The
 #      range is 00 (midnight to just before 1am) to 23 (11pm to just before midnight) inclusive.
 #      Do not use a single decimal digit or the match will always fail!
 
 # Use a ".." as double digit and "." as any single digit.
 
 smartd_short_test: '../.././02'   # 2AM every day
-smartd_long_test:  '../15/./03'   # 3AM on the 15th of every month
+smartd_long_test: '../15/./03'   # 3AM on the 15th of every month
 
 
-###[ Display Temperature Units ]###################################################################
+# [ Display Temperature Units ]####################################################################
 # This will adjust HDDTemp to display temperature values in F or C.  It will also enable F to C
 # conversions for temperatures pulled directly from smartctl (such as for NVMe devices)
 display_temp_unit: "F"
 
 
-###[ HDD Temp Settings ]###########################################################################
+# [ HDD Temp Settings ]############################################################################
 # manual_entries_to_hddtemp - manually add entries for which hddtemp cannot discover.
 #  $ sudo hddtemp /dev/sda
 #  If it shows: WARNING: Drive /dev/sda doesn't seem to have a temperature sensor.

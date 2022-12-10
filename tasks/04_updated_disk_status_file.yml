@@ -1,23 +1,21 @@
 # This script will adjust the settings within the disk status file
 ---
 - name: Update Disk Status MOTD File List Block
-  block:
-
-  - name: Enable F to C Temperature Conversions
-    replace: 
-      path: "{{motd_path}}/{{disk_status_file}}"
-      regexp: '^(?m)convert_c_to_f=.*$'
-      replace: 'convert_c_to_f=/bin/true'
-    when:
-      - display_temp_unit == "F"
-
-  - name: Disable F to C Temperature Conversions
-    replace: 
-      path: "{{motd_path}}/{{disk_status_file}}"
-      regexp: '^(?m)convert_c_to_f=.*$'
-      replace: 'convert_c_to_f=/bin/false'
-    when:
-      - display_temp_unit == "C"
-
   tags:
-  - updated_services_motd_file
+    - updated_services_motd_file
+  block:
+    - name: Enable F to C Temperature Conversions
+      ansible.builtin.replace:
+        path: "{{ motd_path }}/{{ disk_status_file }}"
+        regexp: '^(?m)convert_c_to_f=.*$'
+        replace: 'convert_c_to_f=/bin/true'
+      when:
+        - display_temp_unit == "F"
+
+    - name: Disable F to C Temperature Conversions
+      ansible.builtin.replace:
+        path: "{{ motd_path }}/{{ disk_status_file }}"
+        regexp: '^(?m)convert_c_to_f=.*$'
+        replace: 'convert_c_to_f=/bin/false'
+      when:
+        - display_temp_unit == "C"

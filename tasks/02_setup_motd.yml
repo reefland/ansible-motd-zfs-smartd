@@ -3,121 +3,127 @@
 #
 
 - name: Install and Apply Message of the Day Settings Block
-  block:
-  ###[ Install Packages ]######################################################
-  - name: Install packages needed for Message of the Day
-    apt:
-      name: ['git','update-motd','figlet','lolcat','bsdmainutils']
-      state: present
-      install_recommends: no
-    when:
-      - ansible_os_family == "Debian"
-
-  - name: Install Ubuntu Specific packages used by Message of the Day
-    apt:
-      name: ['update-notifier-common']
-      state: present
-      install_recommends: no
-    when:
-      - ansible_distribution == 'Ubuntu'
-
-  ###[ Disable Existing MOTD Items We Don't Want ]#############################
-  - name: Check if MOTD files to turn off exist
-    stat:
-      path: "{{motd_path}}/{{ item }}"
-    with_items: "{{motd_entries.to_disable}}"
-    register: my_stat
-
-  - name: Turn off MOTD entries we won't be using
-    file:
-      path: "{{motd_path}}/{{item}}"
-      mode: -x
-      state: file
-    loop: "{{ my_stat.results | selectattr('stat.exists') | map(attribute='item') | list }}"
-
-  ###[ Disabled ranges we want by file globs before enable again ]#############
-  - name: Check if MOTD files to turn off by file globs exist
-    find:
-      paths: "{{motd_path}}"
-      patterns: "{{motd_entries.file_globs_to_disable|default([])}}"
-    register: files_matched
-
-  - name: Turn off MOTD matching entries
-    command: "chmod -x {{item.path}}"
-    with_items: "{{ files_matched.files }}"
-    loop_control:
-      label: "{{ item.path }}"
-
-  #############################################################################
-
-  - name: Check if MOTD files to unlink exist
-    stat:
-      path: "{{motd_path}}/{{ item }}"
-    with_items: "{{motd_entries.to_unlink}}"
-    register: my_stat
-
-  - name: Unlink MOTD entries we won't be using
-    file:
-      path: "{{motd_path}}/{{item}}"
-      state: absent
-    loop: "{{ my_stat.results | selectattr('stat.exists') | map(attribute='item') | list }}"
-
-  - name: Disable Ubuntu News Advertisement
-    ini_file:
-      path: /etc/default/motd-news
-      section:
-      option: "ENABLED"
-      value: "{{show_ubuntu_news_message}}"
-      no_extra_spaces: yes
-      mode: '0644'
-      create: no
-    ignore_errors: true
-    when:
-    - ansible_distribution == 'Ubuntu'
-  
-  ###[ Configure Custom Message of the Day ]###################################
-  - name: Create the GIT directory if does not exist already
-    file: 
-      path: "{{git_root_path|default('/root/git')}}"
-      state: directory
-      mode: '0750'
-
-  - name: Clone GIT repository - overwrite anything locally modified
-    git:
-      repo: "{{motd_git_repo}}"
-      accept_hostkey: yes
-      clone: yes
-      force: yes
-      dest: "{{git_root_path}}/motd"
-
-  - name: Enable the Custom Message of the Day Files
-    copy:
-      src: "{{git_root_path}}/motd/{{item}}"
-      dest: "{{motd_path}}"
-      remote_src: yes
-      mode: '0755'
-      owner: root
-      group: root
-      force: yes
-    with_items: 
-      - "{{enable_these_motd_files}}"
-      - "{{more_motd_entries|default([])}}"
-
-  - name: Check if NEW MOTD File was Generated
-    stat:
-      path: "/run/motd.dynamic.new"
-    register: my_stat
-
-  - name: Replace OLD MOTD with NEW one Generated
-    copy:
-      src: "/run/motd.dynamic.new"
-      dest: "/run/motd.dynamic"
-      remote_src: yes
-      mode: '0644'
-      owner: root
-      group: root
-      force: yes
-    when: my_stat.stat.exists
-
   tags:
   - setup_motd
+  block:
+    # [ Install Packages ]#######################################################
+    - name: Install packages needed for Message of the Day
+      ansible.builtin.apt:
+        name: ['git', 'update-motd', 'figlet', 'lolcat', 'bsdmainutils']
+        state: present
+        install_recommends: false
+      when:
+        - ansible_os_family == "Debian"
+
+    - name: Install Ubuntu Specific packages used by Message of the Day
+      ansible.builtin.apt:
+        name: ['update-notifier-common']
+        state: present
+        install_recommends: false
+      when:
+        - ansible_distribution == 'Ubuntu'
+
+    # [ Disable Existing MOTD Items We Don't Want ]##############################
+    - name: Check if MOTD files to turn off exist
+      ansible.builtin.stat:
+        path: "{{ motd_path }}/{{ item }}"
+      with_items: "{{ motd_entries.to_disable }}"
+      register: my_stat
+
+    - name: Turn off MOTD entries we won't be using
+      ansible.builtin.file:
+        path: "{{ motd_path }}/{{ item }}"
+        mode: "-x"
+        state: file
+      loop: "{{ my_stat.results | selectattr('stat.exists') | map(attribute='item') | list }}"
+
+    # [ Disabled ranges we want by file globs before enable again ]##############
+    - name: Check if MOTD files to turn off by file globs exist
+      ansible.builtin.find:
+        paths: "{{ motd_path }}"
+        patterns: "{{ motd_entries.file_globs_to_disable | default([]) }}"
+      register: files_matched
+
+    - name: Turn off MOTD matching entries
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        mode: "-x"
+      with_items: "{{ files_matched.files }}"
+      loop_control:
+        label: "{{ item.path }}"
+
+    #############################################################################
+
+    - name: Check if MOTD files to unlink exist
+      ansible.builtin.stat:
+        path: "{{ motd_path }}/{{ item }}"
+      with_items: "{{ motd_entries.to_unlink }}"
+      register: my_stat
+
+    - name: Unlink MOTD entries we won't be using
+      ansible.builtin.file:
+        path: "{{ motd_path }}/{{ item }}"
+        state: absent
+      loop: "{{ my_stat.results | selectattr('stat.exists') | map(attribute='item') | list }}"
+
+    - name: Check if /etc/default/motd-news exists
+      ansible.builtin.stat:
+        path: "/etc/default/motd-news"
+      register: motd_file
+
+    - name: Disable Ubuntu News Advertisement
+      community.general.ini_file:
+        path: "/etc/default/motd-news"
+        section:
+        option: "ENABLED"
+        value: "{{ show_ubuntu_news_message }}"
+        no_extra_spaces: true
+        mode: "'0644"
+        create: false
+      when:
+        - motd_file.stat.exists
+        - ansible_distribution == 'Ubuntu'
+
+    # [ Configure Custom Message of the Day ]####################################
+    - name: Create the GIT directory if does not exist already
+      ansible.builtin.file:
+        path: "{{ git_root_path | default('/root/git') }}"
+        state: directory
+        mode: "0750"
+
+    - name: Clone GIT repository - overwrite anything locally modified
+      ansible.builtin.git: # noqa latest[git]
+        repo: "{{ motd_git_repo }}"
+        accept_hostkey: true
+        clone: true
+        force: true
+        dest: "{{ git_root_path }}/motd"
+
+    - name: Enable the Custom Message of the Day Files
+      ansible.builtin.copy:
+        src: "{{ git_root_path }}/motd/{{ item }}"
+        dest: "{{ motd_path }}"
+        remote_src: true
+        mode: '0755'
+        owner: root
+        group: root
+        force: true
+      with_items:
+        - "{{ enable_these_motd_files }}"
+        - "{{ more_motd_entries | default([]) }}"
+
+    - name: Check if NEW MOTD File was Generated
+      ansible.builtin.stat:
+        path: "/run/motd.dynamic.new"
+      register: my_stat
+
+    - name: Replace OLD MOTD with NEW one Generated
+      ansible.builtin.copy:
+        src: "/run/motd.dynamic.new"
+        dest: "/run/motd.dynamic"
+        remote_src: true
+        mode: '0644'
+        owner: root
+        group: root
+        force: true
+      when: my_stat.stat.exists

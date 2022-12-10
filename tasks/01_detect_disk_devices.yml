@@ -2,7 +2,7 @@
 #
 # This helper task will detect the number of disk devices in the system and load them into
 # a variables:
-# "disk_devices" with values like ['sda','sdb'].  
+# "disk_devices" with values like ['sda','sdb'].
 # "disk_by_id" holds the complete device path for each device such as:
 # ['/dev/disk/by-id/ata-VBOX_HARDDISK_VBd3ccb734-59b5fc2d','/dev/disk/by-id/ata-VBOX_HARDDISK_VBd8aaef98-a1359b7a']
 #
@@ -11,25 +11,25 @@
 # Requires gather facts disk info.
 
 - name: Detect Available Disk Devices Block
-  block:
-  # Include values: 8=[SATA, SCSI], 179=[MMC], 259=[NVMe]
-  # And device with a mountpoint (iSCSI?) will have slashes in it, that line is filtered out
-  # The RO indicates if device is read-only (value 1), the awk filters to value 0 - not read-only
-  - name: Detect available disk devices
-    shell:
-      cmd: "lsblk -ndo name,mountpoint,ro --include '8,179,259' | awk '/^[a-z]{3,}+/ && !/[./]/ && /0$/{print $1}'"
-    register: lsblk_devices
-
-  - name: Set disk_devices value
-    set_fact:
-      disk_devices: "{{lsblk_devices.stdout.splitlines()|map('trim')|list}}"
-
-  - name: Set disk_by_id value
-    set_fact:
-      disk_by_id: "{{ disk_devices | map('extract', hostvars[inventory_hostname]['ansible_devices'], ['links', 'ids', 0]) | list | map('regex_replace', '^(.*)', '/dev/disk/by-id/\\g<1>') | list }}"
-
   when:
     - ansible_os_family == "Debian"
   tags:
     - detect_disk_devices
     - always
+  block:
+    # Include values: 8=[SATA, SCSI], 179=[MMC], 259=[NVMe]
+    # And device with a mountpoint (iSCSI?) will have slashes in it, that line is filtered out
+    # The RO indicates if device is read-only (value 1), the awk filters to value 0 - not read-only
+    - name: Detect available disk devices
+      ansible.builtin.shell:
+        cmd: "lsblk -ndo name,mountpoint,ro --include '8,179,259' | awk '/^[a-z]{3,}+/ && !/[./]/ && /0$/{print $1}'"
+      register: lsblk_devices
+      changed_when: lsblk_devices.rc == 0
+
+    - name: Set disk_devices value
+      ansible.builtin.set_fact:
+        disk_devices: "{{ lsblk_devices.stdout.splitlines() | map('trim') | list }}"
+
+    - name: Set disk_by_id value
+      ansible.builtin.set_fact: # noqa yaml[line-length]
+        disk_by_id: "{{ disk_devices | map('extract', hostvars[inventory_hostname]['ansible_devices'], ['links', 'ids', 0]) | list | map('regex_replace', '^(.*)', '/dev/disk/by-id/\\g<1>') | list }}"

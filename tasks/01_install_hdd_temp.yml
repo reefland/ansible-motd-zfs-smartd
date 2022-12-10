@@ -1,62 +1,61 @@
 # HDDTemp project is dead and removed from Ubuntu Repository with 22.04
 
 - name: Install HDD Temp Block
-  block:
-
-  ###[ Install Packages ]######################################################
-  - name: Install packages needed for HDD Temp
-    apt:
-      name: ['hddtemp']
-      state: present
-      install_recommends: no
-
-  ###[ Configure HDDTemp ]#####################################################
-
-  # HDDTemp may not detect Temperature Sensors for SSDs, add manual entries
-  - name: Add manual entries to /etc/hddtemp.db
-    lineinfile:
-      path: "/etc/hddtemp.db"
-      regexp: "^{{item}}"
-      line: "{{item}}"
-      state: present
-    loop: "{{manual_entries_to_hddtemp|list}}"
-
-  # Get the last device letter from each active device, this is needed for hddtmp monitoring
-  # If "disk_devices" contains ['sda','sdb','sdc'] then device_letters is "abc"
-  # Devices ending in numbers like nvme1 which are not supported are skipped
-  - name: Construct device letter string
-    set_fact:
-      device_letters: "{{device_letters|default('') + item[-1]}}"
-    loop:
-      "{{disk_devices}}"
-    loop_control:
-      label: "{{disk_devices}}"
-    when: item[-1] | lower | regex_search("[a-z]")
-
-  # hddtemp can only take a limited number of devices; which is a limit on the number of
-  # parameters which can be passed via the command line.  Break up the disk device list 
-  # into chunks the size defined by "hddtemp_num_devices"
-  
-  - name: "Chunk device letter string by {{hddtemp_num_devices}}"
-    set_fact:
-      device_letters: "{{ device_letters | regex_findall('.{1,' + hddtemp_num_devices|string +'}') }}"
-    when:
-      device_letters is defined
-
-  - name: Creates @reboot CRON entry for HDDTemp instances
-    cron:
-      name: "Load hddtemp at reboot for port {{hddtemp_port+hddtemp_num_instances}}"
-      special_time: reboot
-      job: "/usr/sbin/hddtemp -d /dev/sd[{{item}}] --unit={{display_temp_unit}} --listen=localhost --port={{hddtemp_port+hddtemp_num_instances}}"
-    loop:
-      "{{device_letters}}"
-    loop_control:
-      index_var: hddtemp_num_instances
-      label: "job: /usr/sbin/hddtemp -d /dev/sd[{{item}}]"
-    when:
-      device_letters is defined
-
   when:
-      - (ansible_distribution == "Ubuntu" and ansible_distribution_major_version < "22")  # HDD Temp removed from repos starting with 22.04
+    # HDD Temp removed from repos starting with 22.04
+    - (ansible_distribution == "Ubuntu" and ansible_distribution_major_version < "22")
   tags:
-  - install_hdd_temp
+    - install_hdd_temp
+  block:
+    # [ Install Packages ]#####################################################
+    - name: Install packages needed for HDD Temp
+      ansible.builtin.apt:
+        name: ['hddtemp']
+        state: present
+        install_recommends: false
+
+    # [ Configure HDDTemp ]####################################################
+
+    # HDDTemp may not detect Temperature Sensors for SSDs, add manual entries
+    - name: Add manual entries to /etc/hddtemp.db
+      ansible.builtin.lineinfile:
+        path: "/etc/hddtemp.db"
+        regexp: "^{{ item }}"
+        line: "{{ item }}"
+        state: present
+      loop: "{{ manual_entries_to_hddtemp | list }}"
+
+    # Get the last device letter from each active device, this is needed for hddtmp monitoring
+    # If "disk_devices" contains ['sda','sdb','sdc'] then device_letters is "abc"
+    # Devices ending in numbers like nvme1 which are not supported are skipped
+    - name: Construct device letter string
+      ansible.builtin.set_fact:
+        device_letters: "{{ device_letters | default('') + item[-1] }}"
+      loop:
+        "{{ disk_devices }}"
+      loop_control:
+        label: "{{ disk_devices }}"
+      when: item[-1] | lower | regex_search("[a-z]")
+
+    # hddtemp can only take a limited number of devices; which is a limit on the number of
+    # parameters which can be passed via the command line.  Break up the disk device list
+    # into chunks the size defined by "hddtemp_num_devices"
+
+    - name: "Chunk device letter string by {{ hddtemp_num_devices }}"
+      ansible.builtin.set_fact:
+        device_letters: "{{ device_letters | regex_findall('.{1,' + hddtemp_num_devices | string + '}') }}"
+      when:
+        device_letters is defined
+
+    - name: Creates @reboot CRON entry for HDDTemp instances
+      ansible.builtin.cron:
+        name: "Load hddtemp at reboot for port {{ hddtemp_port + hddtemp_num_instances }}"
+        special_time: reboot
+        job: "/usr/sbin/hddtemp -d /dev/sd[{{ item }}] --unit={{ display_temp_unit }} --listen=localhost --port={{ hddtemp_port + hddtemp_num_instances }}"
+      loop:
+        "{{ device_letters }}"
+      loop_control:
+        index_var: hddtemp_num_instances
+        label: "job: /usr/sbin/hddtemp -d /dev/sd[{{ item }}]"
+      when:
+        device_letters is defined
