@@ -78,7 +78,7 @@
         option: "ENABLED"
         value: "{{ show_ubuntu_news_message }}"
         no_extra_spaces: true
-        mode: "'0644"
+        mode: "0644"
         create: false
       when:
         - motd_file.stat.exists

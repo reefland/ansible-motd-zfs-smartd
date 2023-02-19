@@ -16,6 +16,9 @@ motd_entries:
     - "10-help-text"
     - "80-esm"
     - "80-livepatch"
+    - "88-esm-announce"
+    - "90-updates-available"
+    - "91-contract-ua-esm-status"
 
   # Define Message of the Day items which need to be unlinked (remove -x does not work)
   to_unlink:
@@ -45,6 +48,7 @@ enable_these_motd_files:
   #  - 50-fail2ban-status          # Fail2ban status per jail
   #  - 60-lxd                      # Status of lxd containers
   #  - 60-docker                   # Status of Deployed Docker Containers
+  - 90-updates-available-no-esm # Updated available without ESM or Pro Messages
 
 # [ Message of the day Services overrides ]########################################################
 # The "40-services" service is from another repository with a default set of services to include
