@@ -1,7 +1,7 @@
 ---
 
 - name: Include Task Files
-  include_tasks: "{{task_names}}"
+  ansible.builtin.include_tasks: "{{ task_names }}"
   tags: ["always"]
   loop:
     - 01_detect_disk_devices.yml
@@ -11,5 +11,5 @@
     - 03_updated_services_file.yml
     - 04_updated_disk_status_file.yml
   loop_control:
-    label: "{{task_names}}"
+    label: "{{ task_names }}"
     loop_var: task_names
