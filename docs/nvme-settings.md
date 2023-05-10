@@ -35,4 +35,4 @@ The HDD Temp utility does not support NVMe devices.  If `36-diskstatus` script d
 
 If your device reports temperature differently, then open an issue in the [Custom Message of the Day with ZFS Support](https://github.com/reefland/motd) Repository.
 
-[Back to README.md](../README)
+[Back to README.md](../README.md)
