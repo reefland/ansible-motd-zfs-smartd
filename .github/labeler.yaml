@@ -1,0 +1,18 @@
+---
+area/github:
+  - ".github/**/*"
+  - ".gitignore"
+area/README-update:
+  - "**/README.md"
+area/documentation:
+  - "docs/**/*"
+area/documentation-images:
+  - "images/**/*"
+area/ansible:
+  - "defaults/**/*"
+  - "files/**/*"
+  - "handlers/**/*"
+  - "meta/**/*"
+  - "tasks/**/*"
+  - "templates/**/*"
+  - "vars/**/*"
