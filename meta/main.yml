@@ -1,5 +1,6 @@
 ---
 galaxy_info:
+  role_name: motd_zfs_smartd
   author: Richard Durso
   description: |
     Easily customized message of the day (MOTD) login screen, with ZFS support, smartmon drive testing,
