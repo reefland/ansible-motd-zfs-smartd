@@ -1,6 +1,6 @@
 ---
 # [ Customized Message of the Day Settings ]#######################################################
-# Define GIT repo to use for customized Message of the Day
+# Define GIT repo to use to clone customized Message of the Day
 motd_git_repo: "https://github.com/reefland/motd"
 
 # Location to store Message of the Day files from above GIT Repo
@@ -11,7 +11,8 @@ git_root_path: "/root/git"
 show_ubuntu_news_message: '0'
 
 motd_entries:
-  # Define Message of the Day items to disable by removing -x from file
+  # Define Message of the Day items to disable by removing execute bit (-x) from file
+  # See /etc/update-motd.d/
   to_disable:
     - "10-help-text"
     - "80-esm"
@@ -21,12 +22,15 @@ motd_entries:
     - "91-contract-ua-esm-status"
 
   # Define Message of the Day items which need to be unlinked (remove -x does not work)
+  # See /etc/update-motd.d/
   to_unlink:
     - "50-landscape-sysinfo"
 
-  # Define Message of the Day items to disable by file globs (wildcards) by removing the -x from the file
-  # The intent is to disable message files in ranges that will be applied below.
-  # This allows message files removed from enable lists get disabled
+  # Define Message of the Day items to disable by file globs (wildcards) by removing the -x from the
+  # file. The intent is to disable message files in ranges 40's, 50's, 60's, etc.
+  # See /etc/update-motd.d/
+  # If you wanted to disable all 90's range files and enable a subset (using next section) you would
+  # start by add the - "9?-*" regular expression below.
   file_globs_to_disable:
     - "1?-*"
     - "2?-*"
@@ -35,15 +39,17 @@ motd_entries:
     - "5?-*"
     - "6?-*"
 
-# Define Custom Message of the Day files to ENABLE from the GIT Repo to all hosts
+# Define Custom Message of the Day files to ENABLE. This also defines which files to add from the
+# Message of the Day Git Repo (defined by motd_git_repo variable above)
+# See /etc/update-motd.d/
 enable_these_motd_files:
   #  - 10-hostname                 # Blah no color hostname
   - 10-hostname-color
   - 20-sysinfo
-  #  - 20-uptime                   # Standard uptime message
-  - 30-zpool-bar                # ZFS Usage Graphs
-  - 36-diskstatus               # Disks, Temps, Test Results
-  - 40-services                 # Status of Services
+  #  - 20-uptime                   # Standard uptime message (20-sysinfo has uptime)
+  - 30-zpool-bar                # ZFS pool usage graphs
+  - 36-diskstatus               # Disk status, temps, test results, wear level, etc.
+  - 40-services                 # Status of selected services
   #  - 50-fail2ban                 # Fail2ban Summary (standard)
   #  - 50-fail2ban-status          # Fail2ban status per jail
   #  - 60-lxd                      # Status of lxd containers
@@ -63,11 +69,21 @@ services_list_override:
   - "smartd"
   - "postfix"
 
-# Set the number service columns to display
+# The "40-services" displays service status in columns. You can set how many columns to display:
 services_columns_to_display: 4
 
-# [ Smartmon Tools Settings ]######################################################################
-# Define when smartctl shot and long test will take place.
+# The "36-diskstatus" option for "sed_filter" is used to help make device names smaller, easier
+# to read and understand, make more human readable. For Example, the name "CT1000MX500SSD1" is
+# a Crucial 1TB MX500 SSD.  This filter can be extended to rename devices name being displayed.
+# each entry is "s/" (sed search), then a regular express to search with, a "/" followed by
+# replacement text (or just // to simply delete the match), lastly each statement ends with "/;"
+
+sed_filter: >-
+  s/^scsi-SATA_//; s/^ata-//; s/Series_//; s/^nvme-//; s/_with_Heatsink//; s/CT1000MX500SSD1/Crucial_MX500_1TB_SSD/;
+
+# The "36-diskstatus" Smartmon Tools Overrides
+#
+# Define when smartctl short and long duration test will take place.
 # Format is: MM/DD/d/HH, where:
 
 # MM = Month of the year, expressed with two decimal digits. The range is from 01 (January)
@@ -83,29 +99,31 @@ services_columns_to_display: 4
 # Use a ".." as double digit and "." as any single digit.
 
 smartd_short_test: '../.././02'   # 2AM every day
-smartd_long_test: '../15/./03'   # 3AM on the 15th of every month
+smartd_long_test: '../15/./03'    # 3AM on the 15th of every month
 
+# If smtp client is available to allow external email, set notification email address. To send email
+# to more than one user, use a "comma separated" form for the address (no spaces). Reminder this
+# variable can be set uniquely per host or groups of hosts using ansible inventory file or other
+# ansible methods:  user1@address1,user2@address2,...,userN@addressN (with no spaces)
+smartd_email_notification: "root"
 
-# [ Display Temperature Units ]####################################################################
-# This will adjust HDDTemp to display temperature values in F or C.  It will also enable F to C
-# conversions for temperatures pulled directly from smartctl (such as for NVMe devices)
+# Display Temperature Units
+# This will adjust output to display temperature values in F or C.  It will also enable F to C
+# conversions for temperatures pulled directly from smartctl (SATA HDD, SSD, NVMe, etc)
 display_temp_unit: "F"
 
-
-# [ HDD Temp Settings ]############################################################################
-# manual_entries_to_hddtemp - manually add entries for which hddtemp cannot discover.
-#  $ sudo hddtemp /dev/sda
-#  If it shows: WARNING: Drive /dev/sda doesn't seem to have a temperature sensor.
-#               /dev/sda: Samsung SSD 840 Series:  no sensor
-
-#  This can help discover the device data field number for temperature:
-#  $ sudo smartctl -a /dev/sda | grep -i temp
-
-#  Finds: 190 Airflow_Temperature_Cel 0x0032   077   060   000    Old_age   Always       -       23
-
-# Field 1: Use a string or regex matching the drive's display name (as reported by hddtemp output)
-# Field 2: SMART data field number (190 for Samsung 840 and 860 models)
-# Field 3: Drive reports temperature in unit (C or F)
-# Field 4: Label string or comment you define
-manual_entries_to_hddtemp:
-  - '"Samsung SSD (840|860)" 190 C "Temp for Samsung SSDs"'
+# Smartmon DEFAULT testing directives
+# -a = Equivalent to turning on all of the following Directives:
+#     '-H' to check the SMART health status
+#     '-f' to report failures of Usage (rather than Prefail) Attributes
+#     '-t' to track changes in both Prefailure and Usage Attributes
+#     '-l error' to report increases in the number of ATA errors
+#     '-l selftest' to report increases in the number of Self-Test Log errors
+#     '-l selfteststs' to report changes of Self-Test execution status
+#     '-C 197' to report nonzero values of the current pending sector count
+#     '-U 198' to report nonzero values of the offline pending sector count
+# -s (S/xxx|Lxxx) = Self-Test schedules
+# -m = Send a warning email to one or more email address
+# -M exec = run the executable PATH instead of the default mail command, when smartd needs to send email
+smartd_conf_values: >
+  DEFAULT -a -s (S/{{ smartd_short_test }}|L/{{ smartd_long_test }}) -m {{ smartd_email_notification }} -M exec /usr/share/smartmontools/smartd-runner

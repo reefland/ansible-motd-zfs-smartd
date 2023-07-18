@@ -19,7 +19,7 @@ Ansible role used to deploy customized Message of the Day. Dress up your login w
 ## Requirements
 
 * SSH Server configured to display message of the day (enabled by default on Ubuntu)
-* Ubuntu 18.04 through 22.04 releases tested
+* Ubuntu 22.04 Tested
 * Other systems probably work fine, untested. Let me know.
 
 ---
@@ -29,7 +29,7 @@ Ansible role used to deploy customized Message of the Day. Dress up your login w
 The following packages will be installed:
 
 * [smartmontools](https://en.wikipedia.org/wiki/Smartmontools) retrieves the S.M.A.R.T. (Selt-Monitoring, Analysis and Reporting Technology) attributes from the disk devices including temperature and performs periodic testing of the disk devices
-* [hddtemp](https://wiki.archlinux.org/index.php/Hddtemp) reads temperature S.M.A.R.T.  attribute from disk devices. This will be run as a daemon
+* [nvme-cli](https://packages.ubuntu.com/search?keywords=nvme-cli) NVM-Express user space tooling for Linux
 * [git](https://en.wikipedia.org/wiki/Git) needed to retrieve files from [Custom Message of the Day with ZFS Support](https://github.com/reefland/motd) Repository
 * [update-motd](http://manpages.ubuntu.com/manpages/focal/man5/update-motd.5.html) is a framework by which `motd` is dynamically assembled from a collection of scripts at login
 * [figlet](https://en.wikipedia.org/wiki/FIGlet) to generate the hostname as a larger banner font
@@ -55,8 +55,9 @@ testlinux.example.com more_motd_entries='["60-docker"]' more_services_entries='[
 ```
 
 * The `[motd_group:vars]` block defines variables that will be applied to all systems defined in the group and can override variables defined in `defaults/main.yml`.
-  * The variable `enable_these_motd_files=` is optional and specifies which MOTD messages are to be applied to all systems defined in this group.  If not defined here the value in `defaults/main.yml` will be used.
-  * The variable `services_list_override=` is optional and specifies which services the service MOTD file will report on. This is applied to all systems defined in this group. If not defined here the value in `defaults/main.yml` will be used.
+  * Variable `enable_these_motd_files=` is optional and specifies which MOTD messages are to be applied to all systems defined in this group.  If not defined here the value in `defaults/main.yml` will be used.
+  * Variable `services_list_override=` is optional and specifies which services the service MOTD file will report on. This is applied to all systems defined in this group. If not defined here the value in `defaults/main.yml` will be used.
+  * Variable `smartd_email_notification` is an optional comma separated with no spaces list of email addresses for `smartctl` notifications provided you already have a working smtp client configured for system use.
 * The `[motd_group]` block lists the hostname(s) that you intent to apply this script to.
   * The variable `more_motd_entries=` is optional and specifies which MOTD messages are unique to that host and not installed on every host.  If not defined here then nothing else will be added to `enable_these_motd_files` list.
   * The variable `more_services_entries=` is optional and specifies which additional services the MOTD service file should report on for the specific host.  If not defined here then nothing else will be added to `services_list_override=` list.
@@ -75,6 +76,7 @@ motd_group:
   vars:
     enable_these_motd_files: ["10-hostname-color", "20-sysinfo", "30-zpool-bar", "40-services"]
     services_list_override: ["fail2ban", "zed", "smartd"]
+    smartd_email_notification: "user1@example.com,user2@example.com,..."
 ```
 
 ---
@@ -94,6 +96,9 @@ motd_entries:
     - "10-help-text"
     - "80-esm"
     - "80-livepatch"
+    - "88-esm-announce"
+    - "90-updates-available"
+    - "91-contract-ua-esm-status"
 ```
 
 Some older version of Ubuntu used symlinks, this block can unlink them:
@@ -131,6 +136,7 @@ enable_these_motd_files:
   #  - 50-fail2ban-status          # Fail2ban status per jail
   #  - 60-lxd                      # Status of lxd containers
   #  - 60-docker                   # Status of Deployed Docker Containers
+  - 90-updates-available-no-esm # Updated available without ESM or Pro Messages
 ```
 
 ### System Specific Message Files to Enable
@@ -209,8 +215,6 @@ services_columns_to_display: 4
 
 ## Additional Settings to Review
 
-* Review [HDD Temp Settings](docs/hdd-temp-settings.md)
-  * Includes how to add custom entries to HDD Temp database if your device is not supported
 * Review [Smartmon Testing Settings](docs/smartmon-tests.md)
   * Includes how to view and set testing schedules
 * Review [NVME Device Settings](docs/nvme-settings.md)
@@ -239,5 +243,3 @@ ansible-playbook -i inventory motd-zfs-smartd.yml
 # Use Ansible's limit parameter to specify individual hostname to run on:
 ansible-playbook -i inventory motd-zfs-smartd.yml -l testlinux.example.com
 ```
-
-_NOTE: You would want to run this again anytime a disk device is replaced to make sure `smartmontools` has added the device to its testing schedule. Or you can manually update the `/etc/smartd.conf` file._

@@ -1,4 +1,4 @@
-# This script will adjust the settings within the disk status file
+# This script will adjust the settings within the 36-diskstatus MOTD file
 ---
 - name: Update Disk Status MOTD File List Block
   tags:
@@ -19,3 +19,12 @@
         replace: 'convert_c_to_f=/bin/false'
       when:
         - display_temp_unit == "C"
+
+    # The sed_filter is used to help make device names smaller, easier
+    # to read and understand, more human readable.
+
+    - name: Update sed_filter setting
+      ansible.builtin.replace:
+        path: "{{ motd_path }}/{{ disk_status_file }}"
+        regexp: '^(?m)sed_filter=.*$'
+        replace: 'sed_filter="{{ sed_filter }}"'

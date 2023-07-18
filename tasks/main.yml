@@ -5,7 +5,6 @@
   tags: ["always"]
   loop:
     - 01_detect_disk_devices.yml
-    - 01_install_hdd_temp.yml
     - 02_setup_smartmontools.yml
     - 02_setup_motd.yml
     - 03_updated_services_file.yml
