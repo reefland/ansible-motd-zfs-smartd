@@ -4,7 +4,7 @@
 
 - name: Install and Apply Message of the Day Settings Block
   tags:
-  - setup_motd
+    - setup_motd
   block:
     # [ Install Packages ]#######################################################
     - name: Install packages needed for Message of the Day
@@ -74,7 +74,7 @@
     - name: Disable Ubuntu News Advertisement
       community.general.ini_file:
         path: "/etc/default/motd-news"
-        section:
+        section: "null"
         option: "ENABLED"
         value: "{{ show_ubuntu_news_message }}"
         no_extra_spaces: true
