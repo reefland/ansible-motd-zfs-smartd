@@ -1,3 +1,5 @@
+---
+
 # Location where Message of the Day system files are found:
 motd_path: "/etc/update-motd.d"
 
@@ -8,4 +10,4 @@ motd_service_file: "40-services"
 disk_status_file: "36-diskstatus"
 
 # If Node Exporter script install enabled, where should it be placed
-smartmon_exporter_dest_path: "/usr/local/bin/"
+smartmon_exporter_dest_path: "/usr/local/bin"
