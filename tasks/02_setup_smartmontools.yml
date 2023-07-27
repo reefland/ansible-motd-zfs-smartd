@@ -106,5 +106,7 @@
         job: "{{ item.job }}"
         user: "root"
       loop:
-        - { name: "Smartmon-node-exporter", minute: "{{ smartd_nvme_script_cron_minute }}", hour: "{{ smartd_nvme_script_cron_hour }}",
+        - { name: "Smartmon-node-exporter",
+            minute: "{{ smartd_nvme_script_cron_minute }}",
+            hour: "{{ smartd_nvme_script_cron_hour }}",
             job: "{{ smartmon_exporter_dest_path }}/{{ smartd_nvme_script }} | /usr/bin/sponge {{ smartd_node_export_path }}/smartmon.prom" }

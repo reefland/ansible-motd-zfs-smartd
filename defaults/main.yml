@@ -79,7 +79,12 @@ services_columns_to_display: 4
 # replacement text (or just // to simply delete the match), lastly each statement ends with "/;"
 
 sed_filter: >-
-  s/^scsi-SATA_//; s/^ata-//; s/Series_//; s/^nvme-//; s/_with_Heatsink//; s/CT1000MX500SSD1/Crucial_MX500_1TB_SSD/;
+  s/^scsi-SATA_//;
+  s/^ata-//;
+  s/Series_//;
+  s/^nvme-//;
+  s/_with_Heatsink//;
+  s/CT1000MX500SSD1/Crucial_MX500_1TB_SSD/;
 
 # The "36-diskstatus" Smartmon Tools Overrides
 #
@@ -124,9 +129,11 @@ display_temp_unit: "F"
 #     '-U 198' to report nonzero values of the offline pending sector count
 # -s (S/xxx|Lxxx) = Self-Test schedules
 # -m = Send a warning email to one or more email address
-# -M exec = run the executable PATH instead of the default mail command, when smartd needs to send email
+# -M exec = run executable PATH instead of default mail command, when smartd needs to send email
 smartd_conf_values: >
-  DEFAULT -a -s (S/{{ smartd_short_test }}|L/{{ smartd_long_test }}) -m {{ smartd_email_notification }} -M exec /usr/share/smartmontools/smartd-runner
+  DEFAULT -a -s (S/{{ smartd_short_test }}|L/{{ smartd_long_test }})
+  -m {{ smartd_email_notification }}
+  -M exec /usr/share/smartmontools/smartd-runner
 
 # [ Smartmon Node Exporter for Prometheus ]########################################################
 #

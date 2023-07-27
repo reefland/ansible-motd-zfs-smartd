@@ -27,7 +27,13 @@ Lastly there is a filter which attempts to pretty up the device names for displa
 # device selection like ones above.  This just helps to make disk device names
 # nicer (smaller) or easier to read.  This can be used to rename how ugly device
 # names are shown.
-sed_filter="s/^scsi-SATA_//; s/^ata-//; s/Series_//; s/^nvme-//;"
+sed_filter: >-
+  s/^scsi-SATA_//;
+  s/^ata-//;
+  s/Series_//;
+  s/^nvme-//;
+  s/_with_Heatsink//;
+  s/CT1000MX500SSD1/Crucial_MX500_1TB_SSD/;
 ```
 
 ---

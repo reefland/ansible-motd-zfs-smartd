@@ -7,7 +7,7 @@ Within `defaults/main.yml` if the variable `smartd_node_export_path` is not comm
 A Textfile collector script simply generates a text file of metrics in a format which Prometheus Node Exporter can consume.  
 
 * Node Exporter installation is outside the scope of this process
-  * The Node Exporter needs to have the Textfile collector enabled via a command line parameter:
+  * The Node Exporter needs to have the Textfile collector enabled via a command-line parameter:
 
     ```text
     --collector.textfile.directory=/var/lib/node_exporter/textfile_collector

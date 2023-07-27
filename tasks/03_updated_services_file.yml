@@ -1,4 +1,4 @@
-# This script updated the default list of services hardcoded in the services MOTD file
+# This script updates the default list of services hardcoded in the services MOTD file
 ---
 - name: Update Services MOTD File Services List Block
   tags:
