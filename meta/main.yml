@@ -1,10 +1,12 @@
 ---
+
 galaxy_info:
   role_name: motd_zfs_smartd
   author: Richard Durso
   description: |
     Easily customized message of the day (MOTD) login screen, with ZFS support, smartmon drive testing,
-    drive temperatures, HDD, SSD and NVMe support, with per hosts customizations.
+    drive temperatures, Wear Leveling Indicator, HDD, SSD and NVMe support, with per hosts customizations.
+    Can deploy Prometheus Node Exporter Textfile collector script to gather SMART metrics to Prometheus.
 
   platforms:
     - name: Ubuntu
@@ -17,10 +19,14 @@ galaxy_info:
 
   galaxy_tags:
     - motd
+    - ssh
     - zfs
     - smartctl
     - login
-    - hddtemp
     - ssd
     - nvme
     - temperature
+    - node
+    - exporter
+    - textfile
+    - collector
