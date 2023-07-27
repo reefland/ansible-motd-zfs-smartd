@@ -37,7 +37,7 @@ The following packages will be installed:
 * [lolcat](http://manpages.ubuntu.com/manpages/focal/man6/lolcat.6.html) provides a colorful rendering of the `figlet` hostname banner
 * [update-notifier-common](https://packages.ubuntu.com/focal/update-notifier-common) provides some of the MOTD scripts required including notification if a reboot is required
 * [bsdmainutils](https://launchpad.net/ubuntu/focal/+package/bsdmainutils) provides text parsing utilities ported over from BSD. Utilities such as `column` are used to present disk information.
-* [moreutils](https://joeyh.name/code/moreutils/) package which provides [sponge](https://manpages.ubuntu.com/manpages/jammy/man1/sponge.1.html) utility for atomically write node exporter output to file
+* [moreutils](https://joeyh.name/code/moreutils/) package which provides [sponge](https://manpages.ubuntu.com/manpages/jammy/man1/sponge.1.html) utility for atomic writes of node exporter script output
 
 ---
 
@@ -167,7 +167,7 @@ testlinux.example.com enable_these_motd_files='["10-hostname-color", "30-zpool-b
 
 ### Customize Services to Report on
 
-The following defines the base set of services to report status on.  The MOTD repo services file has a hard coded list of services. This section specifically lets you customize this MOTD service list:
+The following defines the base set of services to report status on.  The MOTD repository services file has a hard coded list of services. This section specifically lets you customize this MOTD service list:
 
 ![Service MOTD Report](images/services_motd_report.png)
 
@@ -230,7 +230,7 @@ services_columns_to_display: 4
 This is an example playbook named `motd-zfs-smartd.yml`:
 
 ```yml
-- name: Install Custom Message of the Day (MOTD), Smartmon Tools, and HDDtemp
+- name: Install Custom Message of the Day (MOTD), Smartmon Tools, SMARTmon Node Exporter
   hosts: motd_group
   become: true
   gather_facts: true
@@ -245,4 +245,20 @@ ansible-playbook -i inventory motd-zfs-smartd.yml
 
 # Use Ansible's limit parameter to specify individual hostname to run on:
 ansible-playbook -i inventory motd-zfs-smartd.yml -l testlinux.example.com
+```
+
+---
+
+## Running Playbook with Tags
+
+The following Ansible Tags can be used to run specific tasks:
+
+* `setup_motd` - Install required packages, perform tasks related to enable / disable configured Message of the Day settings
+* `updated_services_motd_file` - Replace the remote services reported with the configured service list
+* `setup_smartmontools` - Install required packages, update `smartd.conf` file, restart `smartd` service
+* `setup_smartmon_node_exporter` - Install required packages, add SMARTMon Prometheus Node Exporter Textfile Collector script, configure CRON job
+
+```bash
+# Apply playbook tag to all hosts defined in group
+ansible-playbook -i inventory motd-zfs-smartd.yml --tags="setup_motd"
 ```
