@@ -11,7 +11,7 @@
   block:
     - name: Install packages
       ansible.builtin.apt:
-        name: ['smartmontools', 'nvme-cli']
+        name: ['smartmontools', 'nvme-cli', 'git']
         state: present
         install_recommends: false
       when:
