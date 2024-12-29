@@ -57,7 +57,7 @@
 - name: Install SmartMon Node Exporter Script Block
   when:
     - ansible_os_family == "Debian"
-    - smartd_node_export_path is defined
+    - install_smartd_node_exporter | default(false)
   tags:
     - setup_smartmon_node_exporter
   block:

@@ -136,16 +136,13 @@ smartd_conf_values: >
   -M exec /usr/share/smartmontools/smartd-runner
 
 # [ Smartmon Node Exporter for Prometheus ]########################################################
-#
-# If a path is defined, this will define where the Smartmon scripts for Node Exporter output will
-# be written to.  To disable simply comment "smartd_node_export_path" this out, the rest will be
-# ignored.
-#
+
+# Enable smartmon_nvme exporter for Prometheus
+install_smartd_node_exporter: false
+
+# Define where the Smartmon scripts for Node Exporter output will be written to.
 # This should match the value defined in node exporter flag "--collector.textfile.directory"
-# If this value does not exist you will need to add node-exporter configuration it allow the
-# Smartmon node exporter scripts output to be consumed.  The path below will be created if it
-# does not already exist.
-#
+# The path below will be created if it does not already exist.
 smartd_node_export_path: "/var/lib/node_exporter/textfile_collector"
 
 # Git Repo for Smartmon Node Exporter Textfile Collector
