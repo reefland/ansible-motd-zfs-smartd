@@ -7,7 +7,7 @@
     - name: Enable F to C Temperature Conversions
       ansible.builtin.replace:
         path: "{{ motd_path }}/{{ disk_status_file }}"
-        regexp: '^(?m)convert_c_to_f=.*$'
+        regexp: '(?m)^convert_c_to_f=.*$'
         replace: 'convert_c_to_f=/bin/true'
       when:
         - display_temp_unit == "F"
@@ -15,7 +15,7 @@
     - name: Disable F to C Temperature Conversions
       ansible.builtin.replace:
         path: "{{ motd_path }}/{{ disk_status_file }}"
-        regexp: '^(?m)convert_c_to_f=.*$'
+        regexp: '(?m)^convert_c_to_f=.*$'
         replace: 'convert_c_to_f=/bin/false'
       when:
         - display_temp_unit == "C"
@@ -26,5 +26,5 @@
     - name: Update sed_filter setting
       ansible.builtin.replace:
         path: "{{ motd_path }}/{{ disk_status_file }}"
-        regexp: '^(?m)sed_filter=.*$'
+        regexp: '(?m)^sed_filter=.*$'
         replace: 'sed_filter="{{ sed_filter }}"'

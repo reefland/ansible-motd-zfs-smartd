@@ -11,14 +11,18 @@
         - "{{ services_list_override | default([]) }}"
         - "{{ more_services_entries | default([]) }}"
 
+    - name: Show Service List Merged
+      ansible.builtin.debug:
+        msg: "{{ services_list }}"
+
     - name: Replace existing services list with custom list
       ansible.builtin.replace:
         path: "{{ motd_path }}/{{ motd_service_file }}"
-        regexp: '^(?m)services=.*$'
+        regexp: '(?m)^services=.*$'
         replace: 'services=({{ services_list }})'
 
     - name: Replace existing number of columns to display with custom number
       ansible.builtin.replace:
         path: "{{ motd_path }}/{{ motd_service_file }}"
-        regexp: '^(?m)COLUMNS=.*$'
+        regexp: '(?m)^COLUMNS=.*$'
         replace: 'COLUMNS=({{ services_columns_to_display }})'
