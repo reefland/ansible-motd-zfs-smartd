@@ -8,6 +8,3 @@ motd_service_file: "40-services"
 
 # Disk Status File to customize
 disk_status_file: "36-diskstatus"
-
-# If Node Exporter script install enabled, where should it be placed
-smartmon_exporter_dest_path: "/usr/local/bin"

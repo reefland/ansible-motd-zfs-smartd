@@ -13,7 +13,6 @@ Ansible role used to deploy customized Message of the Day. Dress up your login w
 * Standardized services lists for all hosts and additional list for specific hosts can be defined.
 * Each system login will show you the status of the last device test as well as its current temperature.
 * Additional MOTD files are provided and can be enabled, new ones can be added.
-* Smartmon Node Exporter Textfile Collector for Prometheus
 
 ---
 
@@ -31,13 +30,12 @@ The following packages will be installed:
 
 * [smartmontools](https://en.wikipedia.org/wiki/Smartmontools) retrieves the S.M.A.R.T. (Selt-Monitoring, Analysis and Reporting Technology) attributes from the disk devices including temperature and performs periodic testing of the disk devices
 * [nvme-cli](https://packages.ubuntu.com/search?keywords=nvme-cli) NVM-Express user space tooling for Linux
-* [git](https://en.wikipedia.org/wiki/Git) needed to retrieve files from [Custom Message of the Day with ZFS Support](https://github.com/reefland/motd) and [SMARTmon Exporter with Dashboard](https://github.com/reefland/smartmon_nvme) Repositories
+* [git](https://en.wikipedia.org/wiki/Git) needed to retrieve files from [Custom Message of the Day with ZFS Support](https://github.com/reefland/motd) repository
 * [update-motd](http://manpages.ubuntu.com/manpages/focal/man5/update-motd.5.html) is a framework by which `motd` is dynamically assembled from a collection of scripts at login
 * [figlet](https://en.wikipedia.org/wiki/FIGlet) to generate the hostname as a larger banner font
 * [lolcat](http://manpages.ubuntu.com/manpages/focal/man6/lolcat.6.html) provides a colorful rendering of the `figlet` hostname banner
 * [update-notifier-common](https://packages.ubuntu.com/focal/update-notifier-common) provides some of the MOTD scripts required including notification if a reboot is required
 * [bsdmainutils](https://launchpad.net/ubuntu/focal/+package/bsdmainutils) provides text parsing utilities ported over from BSD. Utilities such as `column` are used to present disk information.
-* [moreutils](https://joeyh.name/code/moreutils/) package which provides [sponge](https://manpages.ubuntu.com/manpages/jammy/man1/sponge.1.html) utility for atomic writes of node exporter script output
 
 ---
 
@@ -221,7 +219,6 @@ services_columns_to_display: 4
   * Includes how to view and set testing schedules
 * Review [NVME Device Settings](docs/nvme-settings.md)
 * Review [Custom Message of the Day with ZFS Support](https://github.com/reefland/motd) repository for more detailed information.
-* Review [SMARTmon Exporter with Dashboard](https://github.com/reefland/smartmon_nvme) repository for more detailed information.
 
 ---
 
@@ -256,7 +253,6 @@ The following Ansible Tags can be used to run specific tasks:
 * `setup_motd` - Install required packages, perform tasks related to enable / disable configured Message of the Day settings
 * `updated_services_motd_file` - Replace the remote services reported with the configured service list
 * `setup_smartmontools` - Install required packages, update `smartd.conf` file, restart `smartd` service
-* `setup_smartmon_node_exporter` - Install required packages, add SMARTMon Prometheus Node Exporter Textfile Collector script, configure CRON job
 
 ```bash
 # Apply playbook tag to all hosts defined in group
