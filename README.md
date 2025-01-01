@@ -1,4 +1,4 @@
-# Ansible Role for Custom Message of the Day (MOTD), Smartmon Tools, Smartmon Node Exporter and ZFS Support
+# Ansible Role for Custom Message of the Day (MOTD), Smartmon Tools with ZFS Support
 
 Ansible role used to deploy customized Message of the Day. Dress up your login welcome screen and provide informative information about the status of the system.
 
