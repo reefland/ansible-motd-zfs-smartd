@@ -4,6 +4,10 @@ Ansible role used to deploy customized Message of the Day. Dress up your login w
 
 ![Sample Login Screen](images/colors_from_dropdown.png)
 
+The `zpool usage` section can now show a more detailed zpool usage, see `30-zpool-detailed` script.
+
+![Zpool Detailed Usage](./images/30-zpool-detailed_example.png)
+
 ---
 
 ## TL;DR
@@ -19,7 +23,7 @@ Ansible role used to deploy customized Message of the Day. Dress up your login w
 ## Requirements
 
 * SSH Server configured to display message of the day (enabled by default on Ubuntu)
-* Ubuntu 22.04 Tested
+* Ubuntu 22.04 / 24.04 Tested
 * Other systems probably work fine, untested. Let me know.
 
 ---
@@ -129,7 +133,7 @@ enable_these_motd_files:
   - 10-hostname-color
   - 20-sysinfo
   #  - 20-uptime                   # Standard uptime message  
-  - 30-zpool-bar                # ZFS Usage Graphs
+  - 30-zpool-detailed              # ZFS pool usage details
   - 36-diskstatus               # Disks, Temps, Test Results
   - 40-services                 # Status of Services
   #  - 50-fail2ban                 # Fail2ban Summary (standard)
