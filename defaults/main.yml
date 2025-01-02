@@ -47,7 +47,7 @@ enable_these_motd_files:
   - 10-hostname-color
   - 20-sysinfo
   #  - 20-uptime                   # Standard uptime message (20-sysinfo has uptime)
-  - 30-zpool-bar                # ZFS pool usage graphs
+  - 30-zpool-detailed              # ZFS pool usage details
   - 36-diskstatus               # Disk status, temps, test results, wear level, etc.
   - 40-services                 # Status of selected services
   #  - 50-fail2ban                 # Fail2ban Summary (standard)
