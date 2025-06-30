@@ -86,6 +86,9 @@ sed_filter: >-
   s/_with_Heatsink//;
   s/CT1000MX500SSD1/Crucial_MX500_1TB_SSD/;
 
+# Limited SmartMonTool to include specific types: 8=[SATA, SCSI], 179=[MMC], 259=[NVMe]
+smartd_device_types: "8,179,259"
+
 # The "36-diskstatus" Smartmon Tools Overrides
 #
 # Define when smartctl short and long duration test will take place.
